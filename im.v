@@ -37,7 +37,7 @@ module im(
     assign data = mem[addr[9:2]];
 
     always @(posedge clk) begin
-        $monitor("%h: %h", addr[9:2], data);
+        $monitor("%h: %h", addr, data);
     end
 
 endmodule

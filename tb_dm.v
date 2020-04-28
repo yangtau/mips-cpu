@@ -67,17 +67,35 @@ module tb_dm;
         wdata = 32;
 
         #10;
-        addr = 1;
+        addr = 4;
         ctrl_w = 1;
         ctrl_r = 0;
         wdata = 64;
 
         #10;
-        addr = 1;
+        addr = 8;
         ctrl_w = 1;
         ctrl_r = 0;
-        wdata = 64;
-
+        wdata = 128;
+        
+        #10;
+        addr = 4;
+        ctrl_w = 0;
+        ctrl_r = 1;
+        wdata = 0;
+        
+        #10;
+        addr = 8;
+        ctrl_w = 0;
+        ctrl_r = 1;
+        wdata = 0;
+        
+        #10;
+        addr = 0;
+        ctrl_w = 0;
+        ctrl_r = 1;
+        wdata = 0;
+        
 
     end
       

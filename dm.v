@@ -20,21 +20,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 module dm(
     input  wire        clk,
-    input  wire [32:0] addr,
+    input  wire [31:0] addr,
     input  wire        ctrl_w, ctrl_r,
-    input  wire [32:0] wdata,
+    input  wire [31:0] wdata,
     output wire [31:0] rdata);
 
     parameter NMEM = 256; // NMEM * 32bits for data
     reg [31:0] mem[0:NMEM-1];
 
-    always @(posedge clk)
+    always @(posedge clk) begin
         if (ctrl_w) begin
-            mem[addr] = wdata;
+            mem[addr[9:2]] = wdata;
         end
-        if (ctrl_r) begin
-            rdata = mem[addr];
-        end
+    end
+    
+    assign rdata = ctrl_r ? mem[addr[9:2]][31:0] : 0;
+    
+    
+    always @(posedge clk) begin
+        $monitor("%h w%d: %h ;r%d:%h", addr, ctrl_w, wdata, ctrl_r, rdata);
     end
 
 endmodule
