@@ -1,1 +1,3 @@
 mips-cpu/
+ins/
+.hdl_checker/

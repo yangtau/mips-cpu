@@ -4,14 +4,13 @@
 // Company: 
 // Engineer:
 //
-// Create Date:   11:52:57 04/28/2020
+// Create Date:   21:20:23 05/04/2020
 // Design Name:   alu
 // Module Name:   C:/Users/qyang/Code/mips/cpu/tb_alu.v
 // Project Name:  cpu
 // Target Device:  
 // Tool versions:  
 // Description: 
-//
 // Verilog Test Fixture created by ISE for module: alu
 //
 // Dependencies:
@@ -21,61 +20,76 @@
 // Additional Comments:
 // 
 ////////////////////////////////////////////////////////////////////////////////
-
+`include "alu.v"
 module tb_alu;
 
-    // Inputs
-    reg [3:0] ctl;
-    reg [31:0] a;
-    reg [31:0] b;
+	// Inputs
+	reg [5:0] alu_op;
+	reg [31:0] a;
+	reg [31:0] b;
+	reg [5:0] shamt;
 
-    // Outputs
-    wire [31:0] out;
-    wire zero;
+	// Outputs
+	wire [31:0] out;
+	wire zero;
+	wire great;
+	wire overflow;
 
-    // Instantiate the Unit Under Test (UUT)
-    alu uut (
-        .ctl(ctl), 
-        .a(a), 
-        .b(b), 
-        .out(out), 
-        .zero(zero)
-    );
+	// Instantiate the Unit Under Test (UUT)
+	alu uut (
+		.alu_op(alu_op), 
+		.a(a), 
+		.b(b), 
+		.shamt(shamt), 
+		.out(out), 
+		.zero(zero), 
+		.great(great), 
+		.overflow(overflow)
+	);
 
-    initial begin
-        // Initialize Inputs
-        ctl = 0;
-        a = 0;
-        b = 0;
-        // Wait 100 ns for global reset to finish
-        #100;
-        #10;
-        // and
-        ctl = 0;
-        a = 32;
-        b = 96;
-        #10;
-        // or
-        ctl = 1;
-        a = 32;
-        b = 64;
-        #10;
-        // add
-        ctl = 2;
-        a = 32;
-        b = 64;
-        #10;
-        // sub
-        ctl = 6;
-        a = 64;
-        b = 32;
-        #10;
-        // slt
-        ctl = 7;
-        a = 64;
-        b = 3;
+	initial begin
+		// Initialize Inputs
+		alu_op = 0;
+		a = 0;
+		b = 0;
+		shamt = 0;
 
-    end
-      
+		// Wait 100 ns for global reset to finish
+		#100;
+        
+		// Add stimulus here
+		// rotr
+		alu_op = `ALU_OP_ROTR;
+		a      = 32'b0000_0000_0000_0011;
+		b      = 32'b1001_1010_1101_0011_1001_1010_1101_0011;
+		shamt  = 5'b00100;
+		#10;
+		// rotrv
+		alu_op = `ALU_OP_ROTRV;
+		a      = 32'b0000_0000_0000_0011;
+		b      = 32'b1001_1010_1101_0011_1001_1010_1101_0011;
+		shamt  = 5'b00100;
+		#10;
+		// addu
+		alu_op = `ALU_OP_ADDU;
+		a      = 32'b0100_0000_0000_0011_0100_0000_0000_0011;
+		b      = 32'b0101_1010_1101_0011_1001_1010_1101_0011;
+		#10;
+		// add 
+		alu_op = `ALU_OP_ADD;
+		a      = 32'b0100_0000_0000_0011_0100_0000_0000_0011;
+		b      = 32'b0101_1010_1101_0011_1001_1010_1101_0011;
+		#10;
+		// sub
+		alu_op = `ALU_OP_SUB;
+		a      = 32'b1100_0000_0000_0011_0100_0000_0000_0011;
+		b      = 32'b0111_1111_1101_0011_1001_1010_1101_0011;
+		#10;
+		// subu
+		alu_op = `ALU_OP_SUBU;
+		a      = 32'b1100_0000_0000_0011_0100_0000_0000_0011;
+		b      = 32'b0111_1111_1101_0011_1001_1010_1101_0011;
+
+	end
 endmodule
 

@@ -1,80 +1,34 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    20:42:54 04/27/2020 
-// Design Name: 
-// Module Name:    control 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+// Company:
+// Engineer:
 //
-// Dependencies: 
+// Create Date:    20:42:54 04/27/2020
+// Design Name:
+// Module Name:    control
+// Project Name:
+// Target Devices:
+// Tool versions:
+// Description:
 //
-// Revision: 
+// Dependencies:
+//
+// Revision:
 // Revision 0.01 - File Created
-// Additional Comments: 
+// Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
 module control(
-        input  wire    [5:0]    opcode,
-        output reg            branch_eq, branch_ne,
-        output reg [1:0]    aluop,
-        output reg            memread, memwrite, memtoreg,
-        output reg            regdst, regwrite, alusrc,
-        output reg            jump);
+           input wire[5:0] opcode,
+           input wire[5:0] funct,
+           output wire[:] alu_op,
+           output wire[:] dm_op,
+           output wire[:] ext_op,
+           output wire[:] pc_op,
+           output wire[:] reg_src,
+           output wire[:] reg_dst,
+           output wire    reg_write);
 
-    always @(*) begin
-        /* defaults */
-        aluop[1:0]    <= 2'b10;
-        alusrc        <= 1'b0;
-        branch_eq    <= 1'b0;
-        branch_ne    <= 1'b0;
-        memread        <= 1'b0;
-        memtoreg    <= 1'b0;
-        memwrite    <= 1'b0;
-        regdst        <= 1'b1;
-        regwrite    <= 1'b1;
-        jump        <= 1'b0;
-
-        case (opcode)
-            6'b100011: begin    /* lw */
-                memread  <= 1'b1;
-                regdst   <= 1'b0;
-                memtoreg <= 1'b1;
-                aluop[1] <= 1'b0;
-                alusrc   <= 1'b1;
-            end
-            6'b001000: begin    /* addi */
-                regdst   <= 1'b0;
-                aluop[1] <= 1'b0;
-                alusrc   <= 1'b1;
-            end
-            6'b000100: begin    /* beq */
-                aluop[0]  <= 1'b1;
-                aluop[1]  <= 1'b0;
-                branch_eq <= 1'b1;
-                regwrite  <= 1'b0;
-            end
-            6'b101011: begin    /* sw */
-                memwrite <= 1'b1;
-                aluop[1] <= 1'b0;
-                alusrc   <= 1'b1;
-                regwrite <= 1'b0;
-            end
-            6'b000101: begin    /* bne */
-                aluop[0]  <= 1'b1;
-                aluop[1]  <= 1'b0;
-                branch_ne <= 1'b1;
-                regwrite  <= 1'b0;
-            end
-            6'b000000: begin    /* add */
-            end
-            6'b000010: begin    /* j jump */
-                jump <= 1'b1;
-            end
-        endcase
-    end
+always @(*) begin
+end
 endmodule
