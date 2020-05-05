@@ -19,12 +19,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module ireg(input  wire [31:0] ins,
-            output wire [5:0] opcode,
-            output wire [5:0] funct,
-            output wire [4:0] rs,
-            output wire [4:0] rt,
-            output wire [4:0] rd,
-            output wire [4:0] shamt,
+            output wire [5:0]  opcode,
+            output wire [5:0]  funct,
+            output wire [4:0]  rs,
+            output wire [4:0]  rt,
+            output wire [4:0]  rd,
+            output wire [4:0]  shamt,
             output wire [15:0] im1,
             output wire [25:0] im2);
 

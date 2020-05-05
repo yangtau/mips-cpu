@@ -20,12 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module greg(input wire         clk,
-            input wire         regwrite,
-            input wire  [4:0]  read1,
-            input wire  [4:0]  read2,
-            input wire  [4:0]  wrreg,
-            input wire  [31:0] wrdata,
+module greg(input  wire        clk,
+            input  wire        reg_wr,
+            input  wire [4:0]  read1,
+            input  wire [4:0]  read2,
+            input  wire [4:0]  wr_num,
+            input  wire [31:0] wr_data,
             output wire [31:0] data1,
             output wire [31:0] data2);
 
@@ -59,8 +59,8 @@ assign data1 = mem[read1][31:0];
 assign data2 = mem[read2][31:0];
 
 always @(posedge clk) begin
-    if (regwrite && wrreg != 5'd0) begin
-        mem[wrreg] <= wrdata;
+    if (reg_wr && wr_num != 5'd0) begin
+        mem[wr_num] <= wr_data;
     end
 end
 endmodule

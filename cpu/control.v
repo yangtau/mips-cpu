@@ -22,10 +22,10 @@
 module control(
            input  wire [5:0] opcode,
            input  wire [5:0] funct,
-           input  wire [5:0] hint, // ins[10:6]
-           input  wire [5:0] rs,
-           input  wire [5:0] rt,
-           input  wire [5:0] rd,
+           input  wire [4:0] hint, // ins[10:6]
+           input  wire [4:0] rs,
+           input  wire [4:0] rt,
+           input  wire [4:0] rd,
            output wire [5:0] alu_op,
            output wire       alu_src, // [rt] or im
            output wire [2:0] dm_op,
@@ -121,37 +121,37 @@ always @(*) begin
 
                 `FUNCT_MULT: begin
                     // mul, muh
-                    if (hint == 6'b00010) begin // mul
+                    if (hint == 5'b00010) begin // mul
                         _alu_op <= `ALU_OP_MUL;
                     end
-                    else if (hint == 6'b00011) begin // muh
+                    else if (hint == 5'b00011) begin // muh
                         _alu_op <= `ALU_OP_MUH;
                     end
                 end
                 `FUNCT_MULTU: begin
                     // mulu, muhu
-                    if (hint == 6'b00010) begin // mulu
+                    if (hint == 5'b00010) begin // mulu
                         _alu_op <= `ALU_OP_MULU;
                     end
-                    else if (hint == 6'b00011) begin // muhu
+                    else if (hint == 5'b00011) begin // muhu
                         _alu_op <= `ALU_OP_MUHU;
                     end
                 end
                 `FUNCT_DIV: begin
                     // div, mod
-                    if (hint == 6'b00010) begin // div
+                    if (hint == 5'b00010) begin // div
                         _alu_op <= `ALU_OP_DIV;
                     end
-                    else if (hint == 6'b00011) begin // mod
+                    else if (hint == 5'b00011) begin // mod
                         _alu_op <= `ALU_OP_MOD;
                     end
                 end
                 `FUNCT_DIVU: begin
                     // divu, modu
-                    if (hint == 6'b00010) begin // divu
+                    if (hint == 5'b00010) begin // divu
                         _alu_op <= `ALU_OP_DIVU;
                     end
-                    else if (hint == 6'b00011) begin // modu
+                    else if (hint == 5'b00011) begin // modu
                         _alu_op <= `ALU_OP_MODU;
                     end
                 end

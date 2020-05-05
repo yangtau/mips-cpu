@@ -22,7 +22,7 @@
 module alu(input wire [5:0]  alu_op,
            input wire [31:0] a,
            input wire [31:0] b,
-           input wire [5:0]  shamt,
+           input wire [4:0]  shamt,
            output reg [31:0] out,
            output wire       zero,
            output wire       great,

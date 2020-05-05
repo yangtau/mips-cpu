@@ -18,8 +18,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
 
-module extend(input wire  [1:0]  ext_op,
-              input wire  [15:0] im,
+module extend(input  wire [1:0]  ext_op,
+              input  wire [15:0] im,
               output wire [31:0] out);
 
 reg [31:0] _out;
