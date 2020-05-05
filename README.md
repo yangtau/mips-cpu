@@ -89,7 +89,7 @@
 
 `great` and `zero` and two input for PC
 **PCOp**：NEXT, BZ (branch if `zero`), BNZ (branch if not `zero`), BG (branch if `great`),
-         BNG (branch if not `great` ), BNGBNZ (branch if not `zero` and not `great`),
+         BNG (branch if not `great` ), BNGNZ (branch if not `zero` and not `great`),
          BGZ (branch if `zero` or `great`), J, JA
 
 **DataMemOp**: BS (sign extend byte)，BZ (zero extend byte)，HS，HZ，W，SB，SH
@@ -122,7 +122,8 @@
 | `bal`    | x      | 0     | 0      | SUB   | 0     | 0     | x   | x     | BGZ   | x    |
 | `j`      | x      | 0     | x      | x     | 0     | 0     | x   | x     | J     | x    |
 | `jal`    | x      | 0     | x      | x     | 0     | 0     | x   | x     | J     | x    |
-| `jalr`   | x      | 0     | x      | x     | 0     | 0     | x   | x     | JA    | x    |
+| `jr`     | x      | 0     | x      | x     | 0     | 0     | x   | x     | JR    | x    |
+| `jalr`   | x      | 0     | x      | x     | 0     | 0     | x   | x     | JR    | x    |
 | `and`    | 1      | 1     | 0      | AND   | 0     | 0     | 0   | x     | NEXT  | x    |
 | `or`     | 1      | 1     | 0      | OR    | 0     | 0     | 0   | x     | NEXT  | x    |
 | `nor`    | 1      | 1     | 0      | NOR   | 0     | 0     | 0   | x     | NEXT  | x    |

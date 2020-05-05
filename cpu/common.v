@@ -12,6 +12,16 @@
 `define DM_OP_SH 3'b101
 `define DM_OP_WD 3'b111
 
+// PC Op
+`define PC_OP_NEXT 4'b0001
+`define PC_OP_BZ   4'b0010 // brach if zero
+`define PC_OP_BNZ  4'b0011 // brach if not zero
+`define PC_OP_BG   4'b0100 // branch if great
+`define PC_OP_BNG  4'b0101 // le: branch if not great
+`define PC_OP_BNGNZ 4'b0110 // ls: not zero and not great
+`define PC_OP_BGZ  4'b0111 // ge: zero or great
+`define PC_OP_J    4'b1000 //
+`define PC_OP_JR   4'b1001 //
 // Opcode
 
 
