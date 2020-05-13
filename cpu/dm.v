@@ -40,15 +40,15 @@ always @(*) begin
     if (dm_r) begin
         case (dm_op)
             `DM_OP_BS: // sign extend byte
-                _rdata <= {{24{_r[31]}},_r[31:24]};
+                _rdata = {{24{_r[31]}},_r[31:24]};
             `DM_OP_BZ: // zero extend byte
-                _rdata <= {{24{1'b0}},_r[31:24]};
+                _rdata = {{24{1'b0}},_r[31:24]};
             `DM_OP_HS:  // sign extend half word
-                _rdata <= {{16{_r[31]}},_r[31:16]};
+                _rdata = {{16{_r[31]}},_r[31:16]};
             `DM_OP_HZ:  // zero exten half word
-                _rdata <= {{16{1'b0}}, _r[31:16]};
+                _rdata = {{16{1'b0}}, _r[31:16]};
             `DM_OP_WD:  // word
-                _rdata <= _r;
+                _rdata = _r;
         endcase
     end
 end
@@ -59,11 +59,11 @@ always @(posedge clk) begin
     if (dm_w) begin
         case (dm_op)
             `DM_OP_WD:
-                mem[addr[9:2]] = wdata;
+                mem[addr[9:2]] <= wdata;
             `DM_OP_SB: // store byte
-                mem[addr[9:2]][31:24] = wdata[7:0]; // least-significant 8-bit
+                mem[addr[9:2]][31:24] <= wdata[7:0]; // least-significant 8-bit
             `DM_OP_SH: // stroe half word
-                mem[addr[9:2]][31:16] = wdata[15:0]; // least-significant 16-bit
+                mem[addr[9:2]][31:16] <= wdata[15:0]; // least-significant 16-bit
         endcase
     end
 end

@@ -51,57 +51,57 @@ assign rot = {b, b};
 always @(*) begin
     case (alu_op)
         `ALU_OP_ADD:
-            out <= sa+sb;
+            out = sa+sb;
         `ALU_OP_ADDU:
-            out <= sa+sb; // TODO: trap if overflow
+            out = sa+sb; // TODO: trap if overflow
         `ALU_OP_SUB:
-            out <= sa-sb;
+            out = sa-sb;
         `ALU_OP_SUBU:
-            out <= sa-sb; // TODO: trap if overflow
+            out = sa-sb; // TODO: trap if overflow
         `ALU_OP_AND:
-            out <= ua & ub;
+            out = ua & ub;
         `ALU_OP_OR:
-            out <= ua | ub;
+            out = ua | ub;
         `ALU_OP_NOR:
-            out <= ~(ua | ub);
+            out = ~(ua | ub);
         `ALU_OP_XOR:
-            out <= ua ^ ub;
+            out = ua ^ ub;
         `ALU_OP_DIV:
-            out <= sa % sb;
+            out = sa % sb;
         `ALU_OP_DIVU:
-            out <= ua % ub;
+            out = ua % ub;
         `ALU_OP_MOD:
-            out <= sa / sb;
+            out = sa / sb;
         `ALU_OP_MODU:
-            out <= ua / ub;
+            out = ua / ub;
         `ALU_OP_MUL:
-            out <= mul_res[31:0];
+            out = mul_res[31:0];
         `ALU_OP_MULU:
-            out <= mulu_res[31:0];
+            out = mulu_res[31:0];
         `ALU_OP_MUH:
-            out <= mul_res[63:32];
+            out = mul_res[63:32];
         `ALU_OP_MUHU:
-            out <= mulu_res[63:32];
+            out = mulu_res[63:32];
         `ALU_OP_SLL:
-            out <= ub << shamt;
+            out = ub << shamt;
         `ALU_OP_SLLV:
-            out <= ub << ua[4:0];
+            out = ub << ua[4:0];
         `ALU_OP_SRA:
-            out <= ub >>> shamt;
+            out = ub >>> shamt;
         `ALU_OP_SRAV:
-            out <= ub >>> ua[4:0];
+            out = ub >>> ua[4:0];
         `ALU_OP_SRL:
-            out <= ub >> shamt;
+            out = ub >> shamt;
         `ALU_OP_SRLV:
-            out <= ub >> ua[4:0];
+            out = ub >> ua[4:0];
         `ALU_OP_ROTR:
-            out <= rot >> shamt; // !note: high bits will be discard?
+            out = rot >> shamt; // !note: high bits will be discard?
         `ALU_OP_ROTRV:
-            out <= rot >> ua[4:0];
+            out = rot >> ua[4:0];
         `ALU_OP_SLT:
-            out <= (sa < sb) ? 32'h00000001: 32'h00000000;
+            out = (sa < sb) ? 32'h00000001: 32'h00000000;
         `ALU_OP_SLTU:
-            out <= (ua < ub) ? 32'h00000001: 32'h00000000;
+            out = (ua < ub) ? 32'h00000001: 32'h00000000;
     endcase
 end
 
@@ -110,11 +110,11 @@ end
 always @(*) begin
     case (alu_op)
         `ALU_OP_ADDU:
-            _overflow <= ((a[31] ~^ b[31]) & (a[31] ^ out[31]));
+            _overflow = ((a[31] ~^ b[31]) & (a[31] ^ out[31]));
         `ALU_OP_SUBU:
-            _overflow <= ((a[31] ^ b[31]) & (a[31] ^ out[31]));
+            _overflow = ((a[31] ^ b[31]) & (a[31] ^ out[31]));
         default:
-            _overflow <= 1'b0;
+            _overflow = 1'b0;
     endcase
 end
 
