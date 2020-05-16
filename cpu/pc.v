@@ -16,6 +16,7 @@ module pc(input wire         clk,
           input wire  [25:0] im2,
           input wire  [3:0]  pc_op,
           input wire  [31:0] j_reg,
+          input wire  [31:0] cop_addr,
           output wire [31:0] rt_addr,
           output wire [31:0] addr);
 
@@ -38,9 +39,8 @@ assign jmp      = {pc_r[31:30], im2, 2'b00};
 
 always @(posedge clk) begin
     _rt_addr <= pc_plus4;
-    if (rest) begin
+    if (rest)
         pc_r <= INITAL_ADDR;
-    end
     else if (
         (pc_op == `PC_OP_BZ && zero) ||
         (pc_op == `PC_OP_BNZ && !zero) ||
@@ -48,18 +48,16 @@ always @(posedge clk) begin
         (pc_op == `PC_OP_BNG && !great) ||
         (pc_op == `PC_OP_BGZ && (zero || great)) ||
         (pc_op == `PC_OP_BNGNZ && (!zero && !great))
-    ) begin
+    )
         pc_r <= br;
-    end
-    else if (pc_op == `PC_OP_J) begin
+    else if (pc_op == `PC_OP_J)
         pc_r <=  jmp;
-    end
-    else if (pc_op == `PC_OP_JR) begin
+    else if (pc_op == `PC_OP_JR)
         pc_r <= j_reg;
-    end
-    else begin
+    else if (pc_op == `PC_OP_COP0)
+        pc_r <= cop_addr;
+    else
         pc_r <= pc_plus4;
-    end
 end
 
 assign addr    = pc_r;

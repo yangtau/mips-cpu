@@ -1,7 +1,8 @@
 // Reg Src  (determine the data write to register file)
-`define REG_SRC_PC  2'b01
-`define REG_SRC_ALU 2'b10
-`define REG_SRC_DM  2'b11
+`define REG_SRC_PC   2'b01
+`define REG_SRC_ALU  2'b10
+`define REG_SRC_DM   2'b11
+`define REG_SRC_COP0 2'b00
 
 // Reg Dst (determine the register number that will be written)
 `define REG_DST_RD 2'b01
@@ -31,15 +32,16 @@
 `define DM_OP_WD 3'b111 // store or load word
 
 // PC Op
-`define PC_OP_NEXT 4'b0001
-`define PC_OP_BZ   4'b0010 // brach if zero
-`define PC_OP_BNZ  4'b0011 // brach if not zero
-`define PC_OP_BG   4'b0100 // branch if great
-`define PC_OP_BNG  4'b0101 // le: branch if not great
+`define PC_OP_NEXT  4'b0001
+`define PC_OP_BZ    4'b0010 // brach if zero
+`define PC_OP_BNZ   4'b0011 // brach if not zero
+`define PC_OP_BG    4'b0100 // branch if great
+`define PC_OP_BNG   4'b0101 // le: branch if not great
 `define PC_OP_BNGNZ 4'b0110 // ls: not zero and not great
-`define PC_OP_BGZ  4'b0111 // ge: zero or great
-`define PC_OP_J    4'b1000 //
-`define PC_OP_JR   4'b1001 //
+`define PC_OP_BGZ   4'b0111 // ge: zero or great
+`define PC_OP_J     4'b1000 //
+`define PC_OP_JR    4'b1001 //
+`define PC_OP_COP0  4'b1010 // get next pc from cop0
 
 // ALU Op
 `define ALU_OP_ADD  6'b100000
@@ -226,9 +228,9 @@
 `define RT_BAL  5'b10001
 
 // COP Op
-`define COPOP_MV  3'b001
-`define COPOP_EN  3'b010 // enable interupt
-`define COPOP_DIS 3'b011 // disable interupt
-`define COPOP_SYS 3'b100 // system call
-`define COPOP_RET 3'b101 // eret
-`define COPOP_BRK 3'b110 // break
+`define COP_OP_MV  3'b001
+`define COP_OP_EN  3'b010 // enable interupt
+`define COP_OP_DIS 3'b011 // disable interupt
+`define COP_OP_SYS 3'b100 // system call
+`define COP_OP_RET 3'b101 // eret
+`define COP_OP_BRK 3'b110 // break

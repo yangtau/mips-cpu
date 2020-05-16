@@ -23,9 +23,9 @@ module control(
            input  wire [5:0] opcode,
            input  wire [5:0] funct,
            input  wire [4:0] hint, // ins[10:6]
-           input  wire [4:0] rs,
-           input  wire [4:0] rt,
-           input  wire [4:0] rd,
+           input  wire [4:0] rs,   // ins[25:21]
+           input  wire [4:0] rt,   // ins[20:16]
+           input  wire [4:0] rd,   // ins[15:11]
            output wire [5:0] alu_op,
            output wire       alu_src, // [rt] or im
            output wire [2:0] dm_op,
@@ -36,7 +36,10 @@ module control(
            output wire [1:0] reg_src,
            output wire [1:0] reg_dst,
            output wire       reg_wr,
-           output wire       reg_in);
+           output wire       reg_in,
+           output wire       cop0_wr,
+           output wire       cop0_rd,
+           output wire [2:0] cop0_op);
 
 reg [5:0] _alu_op;
 reg       _alu_src;
@@ -49,15 +52,26 @@ reg [1:0] _reg_src;
 reg [1:0] _reg_dst;
 reg       _reg_wr;
 reg       _reg_in;
+reg      _cop0_wr;
+reg      _cop0_rd;
+reg      _cop0_op;
+
+wire [31:0] _ins      = {opcode,  rs, rt, rd, hint, funct};
+wire [7:0]  _ins_10_3 = _ins[10:3];
+wire [2:0]  _ins_2_0  = _ins[2:0];
+wire        _ins_5    = _ins[5];
 
 
 always @(*) begin
-    _pc_op  <= `PC_OP_NEXT;
-    _reg_in <= `REG_IN_RT;
-    _reg_wr <= 1'b0;
-    _alu_op <= `ALU_OP_NOP;
-    _dm_rd  <= 1'b0;
-    _dm_wr  <= 1'b0;
+    _pc_op   <= `PC_OP_NEXT;
+    _reg_in  <= `REG_IN_RT;
+    _reg_wr  <= 1'b0;
+    _alu_op  <= `ALU_OP_NOP;
+    _dm_rd   <= 1'b0;
+    _dm_wr   <= 1'b0;
+    _cop0_op <= 2'b00;
+    _cop0_rd <= 1'b0;
+    _cop0_wr <= 1'b0;
     case (opcode)
         `OPCODE_SPECIAL: begin // R-type
             _reg_dst <= `REG_DST_RD;
@@ -391,6 +405,35 @@ always @(*) begin
         end
         `OPCODE_CACHE: begin
         end
+
+        `OPCODE_COP0: begin
+            case (rs)
+                5'b00100: begin
+                    // mtc0
+                    _cop0_op <= `COP_OP_MV;
+                    _cop0_rd <= 1'b1;
+                end
+                5'b00000: begin
+                    // mfc0
+                    _cop0_op <= `COP_OP_MV;
+                    _cop0_wr <= 1'b1;
+                    _reg_src <= `REG_SRC_COP0;
+                    _reg_wr  <= 1'b1;
+                end
+                5'b01011: begin
+                    // ei, di
+                    _cop0_op <= _ins_5 ?  `COP_OP_EN : `COP_OP_DIS;
+                    _reg_src <= `REG_SRC_COP0;
+                    _reg_wr  <= 1'b1;
+                end
+
+                default:
+                    ;
+            endcase
+        end
+        default:
+            // TODO
+            ;
     endcase
 end
 
@@ -405,5 +448,8 @@ assign reg_src = _reg_src;
 assign reg_dst = _reg_dst;
 assign reg_wr  = _reg_wr;
 assign reg_in  = _reg_in;
+assign cop0_wr = _cop0_wr;
+assign cop0_rd = _cop0_rd;
+assign cop0_op = _cop0_op;
 
 endmodule

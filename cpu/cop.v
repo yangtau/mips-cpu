@@ -22,6 +22,7 @@
 module cop(input  wire [4:0]  reg_num,
            input  wire [2:0]  reg_sel,
            input  wire [31:0] in_data,
+           input  wire [31:0] cur_pc,
            input  wire        reg_wr,
            input  wire        reg_rd,
            input  wire [2:0]  cop_op,
@@ -62,23 +63,23 @@ assign out_data = _out;
 
 always @(*) begin
     case (cop_op)
-        `COPOP_MV:
+        `COP_OP_MV:
             if (reg_wr)
                 regs[reg_num][reg_sel] = in_data;
             else if (reg_rd)
                 _out = regs[reg_num][reg_sel];
-        `COPOP_EN: begin
+        `COP_OP_EN: begin
             _out <= `STATUS;
             `STATUS[0] <= 1'b1;
         end
-        `COPOP_DIS: begin
+        `COP_OP_DIS: begin
             _out <= `STATUS;
             `STATUS[0] <= 1'b0;
         end
-        `COPOP_SYS: begin
-
+        `COP_OP_SYS: begin
+            // TODO
         end
-        `COPOP_RET:
+        `COP_OP_RET:
             if (`STATUS[2]) begin
                 // error
                 _out <= `ERROR_EPC;
@@ -89,11 +90,10 @@ always @(*) begin
                 _out <= `EPC;
                 `STATUS[1] <= 1'b0;
             end
-        `COPOP_BRK: begin
+        `COP_OP_BRK: begin
 
         end
-        default:
-            ;
+        default:;
     endcase
 end
 
