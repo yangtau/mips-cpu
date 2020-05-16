@@ -1,0 +1,17 @@
+#Switch
+NET Switch[0] LOC= V5;
+NET Switch[1] LOC= U4;
+NET Switch[2] LOC= V3;
+NET Switch[3] LOC= P4;
+#Segment digsplay Enable
+NET EN LOC = M17; # 7-seg Enable 最右1个
+##### 7-seg display #####
+NET Segs[0] LOC=AA21; # 7-seg CA
+NET Segs[1] LOC=AA22; # 7-seg CB
+NET Segs[2] LOC=Y22; # 7-seg CC
+NET Segs[3] LOC=N15; # 7-seg CD
+NET Segs[4] LOC=AB19; # 7-seg CE
+NET Segs[5] LOC=P20; # 7-seg CF
+NET Segs[6] LOC=Y21; # 7-seg CG
+#Button
+NET Btn0 LOC= E6;

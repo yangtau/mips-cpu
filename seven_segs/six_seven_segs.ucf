@@ -1,0 +1,24 @@
+#Switch
+NET Switch[0] LOC=V5;
+NET Switch[1] LOC=U4;
+NET Switch[2] LOC=V3;
+NET Switch[3] LOC=P4;
+NET Switch[4] LOC=R4;
+#Segment digsplay Enable
+NET En[1] LOC = P16;
+NET En[0] LOC = M17;	
+NET En[3] LOC = N16;	
+NET En[2] LOC = P19;	
+NET En[5] LOC = AA20;
+NET En[4] LOC = AB21;
+##### 7-seg display #####
+NET Segs[0] LOC=AA21; # 7-seg CA
+NET Segs[1] LOC=AA22; # 7-seg CB
+NET Segs[2] LOC=Y22; # 7-seg CC
+NET Segs[3] LOC=N15; # 7-seg CD
+NET Segs[4] LOC=AB19; # 7-seg CE
+NET Segs[5] LOC=P20; # 7-seg CF
+NET Segs[6] LOC=Y21; # 7-seg CG
+# Clock
+NET Clock LOC=D11;
+
