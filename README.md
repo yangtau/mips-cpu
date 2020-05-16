@@ -212,7 +212,7 @@ module greg(input  wire        clk,
      
 - **DataMemOp**: BS (sign extend byte)，BZ (zero extend byte)，HS，HZ，W，SB，SH
 
-- **RegSrc**: 决定要写入寄存器的数据，可选值：PC (rt_addr), ALU (alu_rs), MEM (dm_data).
+- **RegSrc**: 决定要写入寄存器的数据，可选值：PC (rt_addr), ALU (alu_rs), MEM (dm_data), COP0.
 
 - **RegDst**: RD 选择 rd，RT 选择 rt, 31 选择 31 号寄存器
 
@@ -275,6 +275,26 @@ module greg(input  wire        clk,
 | `slt`    | rd     | 1     | 0      | slt   | 0     | 0     | alu    | x     | NEXT  | x    | rt    |
 | `sltu`   | rd     | 1     | 0      | sltu  | 0     | 0     | alu    | x     | NEXT  | x    | rt    |
 
-## 总结
 
-我在这次实验中，实现了一个单周期 CPU， 完成了除了中断指令等特殊指令外要求的全部指令。但是，由于时间有限，只做了少量的仿真测试，并没有完成全部指令的测试。
+### 中断相关指令
+
+#### 固定控制信号
+```
+MemWr = 0
+MemRd = 0
+DMOp   = x
+ALUSrc = x
+AlUOp  = x
+ExtOp  = x
+```
+
+#### 其他控制信号
+|          | RegDst | RegWr | RegSrc | PCOp     | RegIn | CopWr | CopRd      | CopOp |
+| -------- | ------ | ----- | ------ | -------- | ----- | ----- | ---------- | ----- |
+| `mtc0`   | x      | 0     | x      | NEXT     | rt    | 1     | 0          | MV    |
+| `mfc0`   | rt     | 1     | cop0   | NEXT     | x     | 0     | 1          | MV    |
+| `ei`     | rt     | 1     | cop0   | NEXT     | x     | 0     | 1 (status) | EN    |
+| `di`     | rt     | 1     | cop0   | NEXT     | x     | 0     | 1 (status) | DIS   |
+| `syscal` | x      | 0     | x      | COP_ADDR | x     | 0     | 0          | SYS   |
+| `eret`   | x      | 0     | x      | COP_ADDR | x     | 0     | 0          | RET   |
+| `break`  |        |       |        |          | x     |       |            |       |

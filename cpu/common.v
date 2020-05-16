@@ -80,7 +80,7 @@
 `define OPCODE_JAL     6'b000011
 `define OPCODE_BEQ     6'b000100
 `define OPCODE_BNE     6'b000101
-`define OPCODE_BLEZ    6'b000110  // rt = 0  
+`define OPCODE_BLEZ    6'b000110  // rt = 0
 `define OPCODE_BGTZ    6'b000111  // rt = 0
 
 `define OPCODE_ADDI  6'b001000
@@ -129,22 +129,22 @@
 `define OPCODE_CACHE 6'b101111
 
 `define OPCODE_LL    6'b110000
-`define OPCODE_LWC1    6'b110001
-`define OPCODE_LWC2    6'b110010
-`define OPCODE_PREF    6'b110011
-`define OPCODE_RV7    6'b110100
-`define OPCODE_LDC1    6'b110101
-`define OPCODE_LDC2    6'b110110
-`define OPCODE_RV8    6'b110111
+`define OPCODE_LWC1  6'b110001
+`define OPCODE_LWC2  6'b110010
+`define OPCODE_PREF  6'b110011
+`define OPCODE_RV7   6'b110100
+`define OPCODE_LDC1  6'b110101
+`define OPCODE_LDC2  6'b110110
+`define OPCODE_RV8   6'b110111
 
 `define OPCODE_SC    6'b111000
-`define OPCODE_SWC1    6'b111001
-`define OPCODE_SWC2    6'b111010
-`define OPCODE_PCREL    6'b111011
-`define OPCODE_RV9    6'b111100
-`define OPCODE_SDC1    6'b111101
-`define OPCODE_SDC2    6'b111110
-`define OPCODE_RV10    6'b111111
+`define OPCODE_SWC1  6'b111001
+`define OPCODE_SWC2  6'b111010
+`define OPCODE_PCREL 6'b111011
+`define OPCODE_RV9   6'b111100
+`define OPCODE_SDC1  6'b111101
+`define OPCODE_SDC2  6'b111110
+`define OPCODE_RV10  6'b111111
 
 // funct
 `define FUNCT_SLL   6'b000000
@@ -221,6 +221,14 @@
 
 
 // rt field
-`define RT_BLTZ 5'b00000 
+`define RT_BLTZ 5'b00000
 `define RT_BGEZ 5'b00001
 `define RT_BAL  5'b10001
+
+// COP Op
+`define COPOP_MV  3'b001
+`define COPOP_EN  3'b010 // enable interupt
+`define COPOP_DIS 3'b011 // disable interupt
+`define COPOP_SYS 3'b100 // system call
+`define COPOP_RET 3'b101 // eret
+`define COPOP_BRK 3'b110 // break
