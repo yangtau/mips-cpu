@@ -19,14 +19,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
-module alu(input wire [5:0]  alu_op,
+module alu(input wire        clk,
+           input wire [5:0]  alu_op,
            input wire [31:0] a,
            input wire [31:0] b,
            input wire [4:0]  shamt,
            output reg [31:0] out,
-           output wire       zero,
-           output wire       great,
-           output wire       overflow);
+           output reg       zero,
+           output reg       great,
+           output reg       overflow);
 
 wire unsigned [31:0] ua;
 wire unsigned [31:0] ub;
@@ -36,7 +37,8 @@ wire signed   [63:0] mul_res;
 wire signed   [63:0] mulu_res;
 wire          [63:0] rot;
 
-reg _overflow;
+
+reg [64:0] _temp;
 
 assign ua = a;
 assign ub = b;
@@ -49,15 +51,20 @@ assign mulu_res = ua * ub;
 assign rot = {b, b};
 
 always @(*) begin
+    overflow = 1'b0;
     case (alu_op)
         `ALU_OP_ADD:
             out = sa+sb;
-        `ALU_OP_ADDU:
-            out = sa+sb; // TODO: trap if overflow
+        `ALU_OP_ADDU: begin
+            out = sa+sb;
+            overflow = ((a[31] ~^ b[31]) & (a[31] ^ out[31]));
+        end
         `ALU_OP_SUB:
             out = sa-sb;
-        `ALU_OP_SUBU:
-            out = sa-sb; // TODO: trap if overflow
+        `ALU_OP_SUBU: begin
+            out = sa-sb;
+            overflow = ((a[31] ^ b[31]) & (a[31] ^ out[31]));
+        end
         `ALU_OP_AND:
             out = ua & ub;
         `ALU_OP_OR:
@@ -94,33 +101,26 @@ always @(*) begin
             out = ub >> shamt;
         `ALU_OP_SRLV:
             out = ub >> ua[4:0];
-        `ALU_OP_ROTR:
-            out = rot >> shamt; // !note: high bits will be discard?
-        `ALU_OP_ROTRV:
-            out = rot >> ua[4:0];
+        `ALU_OP_ROTR: begin
+            _temp = rot >> shamt;
+            out   = _temp[31:0];
+        end
+        `ALU_OP_ROTRV: begin
+            _temp = rot >> ua[4:0];
+            out   = _temp[31:0];
+        end
         `ALU_OP_SLT:
             out = (sa < sb) ? 32'h00000001: 32'h00000000;
         `ALU_OP_SLTU:
             out = (ua < ub) ? 32'h00000001: 32'h00000000;
     endcase
+    zero  = (out == 0) ? 1'b1 : 1'b0;
+    great = (out > 0)  ? 1'b1 : 1'b0;
+end
+
+always @(posedge clk) begin
     $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
 end
 
-// detect overflow for `addu` and `subu`
-// should be traped if overflow
-always @(out) begin
-    case (alu_op)
-        `ALU_OP_ADDU:
-            _overflow = ((a[31] ~^ b[31]) & (a[31] ^ out[31]));
-        `ALU_OP_SUBU:
-            _overflow = ((a[31] ^ b[31]) & (a[31] ^ out[31]));
-        default:
-            _overflow = 1'b0;
-    endcase
-end
-
-assign zero     = (out == 0) ? 1'b1 : 1'b0;
-assign great    = (out > 0)  ? 1'b1 : 1'b0;
-assign overflow = _overflow;
 
 endmodule

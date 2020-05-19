@@ -27,7 +27,7 @@ module cop(input  wire [4:0]  reg_num,
            input  wire        reg_rd,
            input  wire [2:0]  cop_op,
            input  wire [19:0] code, // syscall, break
-           output wire [31:0] out_data);
+           output reg [31:0] out_data);
 
 reg [31:0] regs [0:31][0:2];
 
@@ -58,10 +58,6 @@ reg [31:0] regs [0:31][0:2];
 ```
 */
 
-reg [31:0] _out;
-
-assign out_data = _out;
-
 initial begin
     `CAUSE  = 32'b0;
     `EPC    = 32'b0;
@@ -76,38 +72,38 @@ always @(*) begin
             if (reg_wr)
                 regs[reg_num][reg_sel] = in_data;
             else if (reg_rd)
-                _out = regs[reg_num][reg_sel];
+                out_data = regs[reg_num][reg_sel];
         `COP_OP_EN: begin
             // ei
-            _out <= `STATUS;
-            `STATUS[0] <= 1'b1;
+            out_data = `STATUS;
+            `STATUS[0] = 1'b1;
         end
         `COP_OP_DIS: begin
             // di
-            _out <= `STATUS;
-            `STATUS[0] <= 1'b0;
+            out_data = `STATUS;
+            `STATUS[0] = 1'b0;
         end
         `COP_OP_RET:
             if (`STATUS[2]) begin
                 // error
-                _out <= `ERROR_EPC;
-                `STATUS[2] <= 1'b0;
+                out_data = `ERROR_EPC;
+                `STATUS[2] = 1'b0;
             end
             else begin
                 // exception
-                _out <= `EPC;
-                `STATUS[1] <= 1'b0;
+                out_data = `EPC;
+                `STATUS[1] = 1'b0;
             end
         `COP_OP_SYS: begin
-            `EPC <= next_pc;
+            `EPC = next_pc;
             // TODO: goto somewhere
-            _out <= 32'h0000_3000;
+            out_data = 32'h0000_3000;
         end
         `COP_OP_BRK: begin
-            `EPC <= next_pc;
+            `EPC = next_pc;
             // TODO: goto somewhere
             // set exl ?
-            _out <= 32'h0000_3000;
+            out_data = 32'h0000_3000;
         end
         default:
             ;

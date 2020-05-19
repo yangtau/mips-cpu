@@ -4,7 +4,7 @@
 // Company:
 // Engineer:
 //
-// Create Date:   20:55:44 05/05/2020
+// Create Date:   21:34:04 05/19/2020
 // Design Name:   cpu
 // Module Name:   C:/Users/qyang/Code/mips/cpu/tb_cpu.v
 // Project Name:  cpu
@@ -21,7 +21,7 @@
 // Additional Comments:
 //
 ////////////////////////////////////////////////////////////////////////////////
-`include "cpu.v"
+
 module tb_cpu;
 
 // Inputs
@@ -50,6 +50,5 @@ initial begin
     // Add stimulus here
 
 end
-
 endmodule
 

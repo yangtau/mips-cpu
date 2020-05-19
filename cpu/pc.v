@@ -17,13 +17,12 @@ module pc(input wire         clk,
           input wire  [3:0]  pc_op,
           input wire  [31:0] j_reg,
           input wire  [31:0] cop_addr,
-          output wire [31:0] rt_addr,
-          output wire [31:0] addr);
+          output reg  [31:0] rt_addr,
+          output reg  [31:0] addr);
 
 parameter INITAL_ADDR = 32'b0;
 
 reg  [31:0] pc_r;
-reg  [31:0] _rt_addr;
 wire [31:0] pc_plus4;
 wire [31:0] br;     // branch offset
 wire [31:0] jmp;      // jump addr
@@ -38,7 +37,7 @@ assign br       = {{14{im1[15]}}, im1, 2'b00} + pc_r;
 assign jmp      = {pc_r[31:30], im2, 2'b00};
 
 always @(posedge clk) begin
-    _rt_addr <= pc_plus4;
+    rt_addr <= pc_plus4;
     if (rest)
         pc_r <= INITAL_ADDR;
     else if (
@@ -58,9 +57,10 @@ always @(posedge clk) begin
         pc_r <= cop_addr;
     else
         pc_r <= pc_plus4;
+
+    addr = pc_r;
+    $monitor("#pc: %h, op:%h", addr, pc_op);
 end
 
-assign addr    = pc_r;
-assign rt_addr = _rt_addr;
 
 endmodule

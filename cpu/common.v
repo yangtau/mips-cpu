@@ -167,23 +167,23 @@
 `define FUNCT_SDBBP   6'b001110
 `define FUNCT_SYNC    6'b001111
 
-`define FUNCT_      6'b010000
-`define FUNCT_      6'b010001
-`define FUNCT_      6'b010010
-`define FUNCT_      6'b010011
-`define FUNCT_      6'b010100
-`define FUNCT_      6'b010101
-`define FUNCT_      6'b010110
-`define FUNCT_      6'b010111
+//`define FUNCT_      6'b010000
+//`define FUNCT_      6'b010001
+//`define FUNCT_      6'b010010
+//`define FUNCT_      6'b010011
+//`define FUNCT_      6'b010100
+//`define FUNCT_      6'b010101
+//`define FUNCT_      6'b010110
+//`define FUNCT_      6'b010111
 
 `define FUNCT_MULT  6'b011000
 `define FUNCT_MULTU 6'b011001
 `define FUNCT_DIV   6'b011010
 `define FUNCT_DIVU  6'b011011
-`define FUNCT_      6'b011100
-`define FUNCT_      6'b011101
-`define FUNCT_      6'b011110
-`define FUNCT_      6'b011111
+//`define FUNCT_      6'b011100
+//`define FUNCT_      6'b011101
+//`define FUNCT_      6'b011110
+//`define FUNCT_      6'b011111
 
 `define FUNCT_ADD    6'b100000
 `define FUNCT_ADDU   6'b100001
@@ -194,32 +194,32 @@
 `define FUNCT_XOR    6'b100110
 `define FUNCT_NOR    6'b100111
 
-`define FUNCT_      6'b101000
-`define FUNCT_      6'b101001
+//`define FUNCT_      6'b101000
+//`define FUNCT_      6'b101001
 `define FUNCT_SLT   6'b101010
 `define FUNCT_SLTU  6'b101011
-`define FUNCT_      6'b101100
-`define FUNCT_      6'b101101
-`define FUNCT_      6'b101110
-`define FUNCT_      6'b101111
+//`define FUNCT_      6'b101100
+//`define FUNCT_      6'b101101
+//`define FUNCT_      6'b101110
+//`define FUNCT_      6'b101111
 
-`define FUNCT_      6'b110000
-`define FUNCT_      6'b110001
-`define FUNCT_      6'b110010
-`define FUNCT_      6'b110011
-`define FUNCT_      6'b110100
-`define FUNCT_      6'b110101
-`define FUNCT_      6'b110110
-`define FUNCT_      6'b110111
+//`define FUNCT_      6'b110000
+//`define FUNCT_      6'b110001
+//`define FUNCT_      6'b110010
+//`define FUNCT_      6'b110011
+//`define FUNCT_      6'b110100
+//`define FUNCT_      6'b110101
+//`define FUNCT_      6'b110110
+//`define FUNCT_      6'b110111
 
-`define FUNCT_      6'b111000
-`define FUNCT_      6'b111001
-`define FUNCT_      6'b111010
-`define FUNCT_      6'b111011
-`define FUNCT_      6'b111100
-`define FUNCT_      6'b111101
-`define FUNCT_      6'b111110
-`define FUNCT_      6'b111111
+//`define FUNCT_      6'b111000
+//`define FUNCT_      6'b111001
+//`define FUNCT_      6'b111010
+//`define FUNCT_      6'b111011
+//`define FUNCT_      6'b111100
+//`define FUNCT_      6'b111101
+//`define FUNCT_      6'b111110
+//`define FUNCT_      6'b111111
 
 
 // rt field

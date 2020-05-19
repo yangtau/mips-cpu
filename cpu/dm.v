@@ -26,34 +26,32 @@ module dm(input  wire        clk,
           input  wire [31:0] addr,
           input  wire [31:0] wdata,
           input  wire [2:0]  dm_op,
-          output wire [31:0] rdata);
+          output reg  [31:0] rdata);
 
 parameter NMEM = 256; // NMEM * 32bits for data
 parameter NBIT = 8;
 reg [31:0] mem[0:NMEM-1];
 
-reg [31:0] _rdata;
 reg [31:0] _r;
 
 always @(*) begin
-    _r <= mem[addr[NBIT+1:2]][31:0];
+    _r = mem[addr[NBIT+1:2]][31:0];
     if (dm_r) begin
         case (dm_op)
             `DM_OP_BS: // sign extend byte
-                _rdata = {{24{_r[31]}},_r[31:24]};
+                rdata = {{24{_r[31]}},_r[31:24]};
             `DM_OP_BZ: // zero extend byte
-                _rdata = {{24{1'b0}},_r[31:24]};
+                rdata = {{24{1'b0}},_r[31:24]};
             `DM_OP_HS:  // sign extend half word
-                _rdata = {{16{_r[31]}},_r[31:16]};
+                rdata = {{16{_r[31]}},_r[31:16]};
             `DM_OP_HZ:  // zero exten half word
-                _rdata = {{16{1'b0}}, _r[31:16]};
+                rdata = {{16{1'b0}}, _r[31:16]};
             `DM_OP_WD:  // word
-                _rdata = _r;
+                rdata = _r;
         endcase
     end
 end
 
-assign rdata = _rdata;
 
 always @(posedge clk) begin
     if (dm_w) begin

@@ -18,18 +18,19 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-`include "dm.v"
-`include "alu.v"
-`include "reg.v"
-`include "im.v"
-`include "pc.v"
+//`include "dm.v"
+//`include "alu.v"
+//`include "reg.v"
+//`include "im.v"
+//`include "pc.v"
 `include "common.v"
-`include "extend.v"
-`include "control.v"
-`include "cop.v"
+//`include "extend.v"
+//`include "control.v"
+//`include "cop.v"
 
 module cpu(input wire clk,
-           input wire rest);
+           input wire rest,
+           output wire overflow);
 
 wire [31:0] ins_addr;
 wire [31:0] ins;
@@ -113,7 +114,7 @@ pc pc(.clk        (clk),
       .addr       (ins_addr));
 
 assign cop_input = reg_data2;
-cop cop0(.reg_num(cop_num),
+cop cop0(.reg_num(reg_data2),
          .reg_sel(cop_sel),
          .in_data(cop_input),
          .next_pc(ins_addr), // TODO: next pc or current pc
@@ -123,11 +124,12 @@ cop cop0(.reg_num(cop_num),
          .code(cop_code),
          .out_data(cop_output));
 
-control ctl(.opcode   (opcode),
+control ctrl(.opcode   (opcode),
             .funct    (funct),
             .hint     (shamt),
             .rs       (rs),
             .rt       (rt),
+            .rd       (rd),
             .alu_op   (alu_op),
             .alu_src  (alu_src),
             .dm_op    (dm_op),
@@ -158,7 +160,7 @@ extend ext(.ext_op (ext_op),
            .out    (ext_data));
 
 // reg file
-always @(reg_in) begin
+always @(reg_in or rd) begin
     case (reg_in)
         `REG_IN_RT:
             reg_num_rd2 <= rd;
@@ -166,7 +168,7 @@ always @(reg_in) begin
             reg_num_rd2 <= 5'b0;
     endcase
 end
-always @(reg_dst) begin
+always @(reg_dst or rd or rt) begin
     case (reg_dst)
         `REG_DST_RD:
             reg_num_wr <= rd;
@@ -176,7 +178,7 @@ always @(reg_dst) begin
             reg_num_wr <= 31;
     endcase
 end
-always @(reg_src) begin
+always @(reg_src or rt_addr or alu_res or dm_rd_data or cop_output) begin
     case (reg_src)
         `REG_SRC_PC:
             reg_wr_data <= rt_addr;
@@ -201,7 +203,7 @@ greg gr(.clk      (clk),
 // alu
 assign alu_input1 = reg_data1;
 assign alu_shamt  =shamt;
-always @(alu_src) begin
+always @(alu_src or ext_data or reg_data2) begin
     case (alu_src)
         `ALU_SRC_IM:
             alu_input2 <= ext_data;
@@ -209,13 +211,14 @@ always @(alu_src) begin
             alu_input2 <= reg_data2;
     endcase
 end
-alu alu(.alu_op   (alu_op),
+alu alu(.clk      (clk),
+        .alu_op   (alu_op),
         .a        (alu_input1),
         .b        (alu_input2),
         .shamt    (alu_shamt),
         .out      (alu_res),
         .zero     (alu_flag_zero),
         .great    (alu_flag_great),
-        .overflow (alu_flag_overflow));
+        .overflow (overflow));
 
 endmodule
