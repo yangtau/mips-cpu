@@ -28,13 +28,5 @@ module ireg(input  wire [31:0] ins,
             output wire [15:0] im1,
             output wire [25:0] im2);
 
-assign opcode = ins[31:26];
-assign funct  = ins[5:0];
-assign rs     = ins[25:21];
-assign rt     = ins[20:16];
-assign rd     = ins[15:11];
-assign shamt  = ins[10:6];
-assign im1    = ins[15:0];
-assign im2    = ins[25:0];
 
 endmodule

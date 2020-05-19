@@ -61,7 +61,6 @@ wire [7:0]  _ins_10_3 = _ins[10:3];
 wire [2:0]  _ins_2_0  = _ins[2:0];
 wire        _ins_5    = _ins[5];
 
-
 always @(*) begin
     _pc_op   <= `PC_OP_NEXT;
     _reg_in  <= `REG_IN_RT;
@@ -123,9 +122,17 @@ always @(*) begin
                 end
                 `FUNCT_MOVN  : begin
                 end
-                `FUNCT_SYSALL: begin
+                `FUNCT_SYSCALL: begin
+                    // syscall
+                    _reg_wr  <= 1'b0;
+                    _pc_op   <= `PC_OP_COP0;
+                    _cop0_op <= `COP_OP_SYS;
                 end
                 `FUNCT_BREAK : begin
+                    // break
+                    _reg_wr  <= 1'b0;
+                    _pc_op   <= `PC_OP_COP0;
+                    _cop0_op <= `COP_OP_BRK;
                 end
                 `FUNCT_SDBBP : begin
                 end
@@ -201,6 +208,10 @@ always @(*) begin
                 `FUNCT_SLTU: begin
                     _alu_op <= `ALU_OP_SLTU;
                 end
+
+                default:
+                    // TODO
+                    ;
             endcase
         end
         `OPCODE_REGIMM: begin // branch
@@ -233,6 +244,9 @@ always @(*) begin
                     _reg_in  <= `REG_IN_ZERO;
                     _alu_src <= `ALU_SRC_RT;
                 end
+                default:
+                    // TODO
+                    ;
             endcase
         end
         `OPCODE_J: begin
@@ -407,30 +421,42 @@ always @(*) begin
         end
 
         `OPCODE_COP0: begin
-            case (rs)
-                5'b00100: begin
-                    // mtc0
-                    _cop0_op <= `COP_OP_MV;
-                    _cop0_rd <= 1'b1;
-                end
-                5'b00000: begin
-                    // mfc0
-                    _cop0_op <= `COP_OP_MV;
-                    _cop0_wr <= 1'b1;
-                    _reg_src <= `REG_SRC_COP0;
-                    _reg_wr  <= 1'b1;
-                end
-                5'b01011: begin
-                    // ei, di
-                    _cop0_op <= _ins_5 ?  `COP_OP_EN : `COP_OP_DIS;
-                    _reg_src <= `REG_SRC_COP0;
-                    _reg_wr  <= 1'b1;
-                end
+            if (
+                _ins[25]   == 1'b1 &&
+                _ins[24:6] == {19{1'b1}} &&
+                funct      == 6'b011000) begin
+                // eret
+                _cop0_op <= `COP_OP_RET;
+                _pc_op   <= `PC_OP_COP0;
+            end
+            else begin
+                case (rs)
+                    5'b00100: begin
+                        // mtc0
+                        _cop0_op <= `COP_OP_MV;
+                        _cop0_rd <= 1'b1;
+                    end
+                    5'b00000: begin
+                        // mfc0
+                        _cop0_op <= `COP_OP_MV;
+                        _cop0_wr <= 1'b1;
+                        _reg_src <= `REG_SRC_COP0;
+                        _reg_wr  <= 1'b1;
+                    end
+                    5'b01011: begin
+                        // ei, di
+                        _cop0_op <= _ins_5 ?  `COP_OP_EN : `COP_OP_DIS;
+                        _reg_src <= `REG_SRC_COP0;
+                        _reg_wr  <= 1'b1;
+                    end
+                    default:
+                        // TODO
+                        ;
+                endcase
 
-                default:
-                    ;
-            endcase
+            end
         end
+
         default:
             // TODO
             ;

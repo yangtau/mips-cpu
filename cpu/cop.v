@@ -22,10 +22,11 @@
 module cop(input  wire [4:0]  reg_num,
            input  wire [2:0]  reg_sel,
            input  wire [31:0] in_data,
-           input  wire [31:0] cur_pc,
+           input  wire [31:0] next_pc,
            input  wire        reg_wr,
            input  wire        reg_rd,
            input  wire [2:0]  cop_op,
+           input  wire [19:0] code, // syscall, break
            output wire [31:0] out_data);
 
 reg [31:0] regs [0:31][0:2];
@@ -61,23 +62,29 @@ reg [31:0] _out;
 
 assign out_data = _out;
 
+initial begin
+    `CAUSE  <= 32'b0;
+    `EPC    <= 32'b0;
+    `STATUS <= 32'b0;
+end
+
 always @(*) begin
     case (cop_op)
         `COP_OP_MV:
+            // mfc0 mtc0
             if (reg_wr)
                 regs[reg_num][reg_sel] = in_data;
             else if (reg_rd)
                 _out = regs[reg_num][reg_sel];
         `COP_OP_EN: begin
+            // ei
             _out <= `STATUS;
             `STATUS[0] <= 1'b1;
         end
         `COP_OP_DIS: begin
+            // di
             _out <= `STATUS;
             `STATUS[0] <= 1'b0;
-        end
-        `COP_OP_SYS: begin
-            // TODO
         end
         `COP_OP_RET:
             if (`STATUS[2]) begin
@@ -90,10 +97,18 @@ always @(*) begin
                 _out <= `EPC;
                 `STATUS[1] <= 1'b0;
             end
-        `COP_OP_BRK: begin
-
+        `COP_OP_SYS: begin
+            `EPC <= next_pc;
+            // TODO: goto somewhere
+            _out <= 32'h0000_3000;
         end
-        default:;
+        `COP_OP_BRK: begin
+            `EPC <= next_pc;
+            // TODO: goto somewhere
+            _out <= 32'h0000_3000;
+        end
+        default:
+            ;
     endcase
 end
 

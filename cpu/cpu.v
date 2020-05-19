@@ -20,13 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 `include "dm.v"
 `include "alu.v"
-`include "ir.v"
 `include "reg.v"
 `include "im.v"
 `include "pc.v"
 `include "common.v"
 `include "extend.v"
 `include "control.v"
+`include "cop.v"
 
 module cpu(input wire clk,
            input wire rest);
@@ -42,6 +42,16 @@ wire [4:0]  rd;
 wire [15:0] im1;
 wire [25:0] im2;
 wire [4:0]  shamt;
+
+// decode instruction
+assign opcode = ins[31:26];
+assign funct  = ins[5:0];
+assign rs     = ins[25:21];
+assign rt     = ins[20:16];
+assign rd     = ins[15:11];
+assign shamt  = ins[10:6];
+assign im1    = ins[15:0];
+assign im2    = ins[25:0];
 
 wire        dm_wr;
 wire        dm_rd;
@@ -66,9 +76,9 @@ wire [1:0]  ext_op;
 wire        alu_src;    // determine alu_input2
 reg  [31:0] alu_input2; // reg_data2 or ext_data
 wire [31:0] alu_input1;
+wire [31:0] alu_res;
 wire [4:0]  alu_shamt;
 wire [5:0]  alu_op;
-wire [31:0] alu_res;
 wire        alu_flag_zero;
 wire        alu_flag_great;
 wire        alu_flag_overflow;
@@ -76,20 +86,19 @@ wire        alu_flag_overflow;
 wire [3:0]  pc_op;
 wire [31:0] rt_addr;
 
+wire [31:0] cop_input;
+wire [31:0] cop_output;
+wire        cop_wr;
+wire        cop_rd;
+wire [2:0]  cop_op;
+wire [4:0]  cop_num = rd;
+wire [2:0]  cop_sel = ins[2:0];
+wire [19:0] cop_code = ins[25:6]; // used in system, break
+
 
 im im(.clk  (clk),
       .addr (ins_addr),
       .data (ins));
-
-ireg ir(.ins    (ins),
-        .opcode (opcode),
-        .funct  (funct),
-        .rs     (rs),
-        .rt     (rt),
-        .rd     (rd),
-        .shamt  (shamt),
-        .im1    (im1),
-        .im2    (im2));
 
 pc pc(.clk        (clk),
       .rest       (rest),
@@ -99,8 +108,20 @@ pc pc(.clk        (clk),
       .im2        (im2),
       .pc_op      (pc_op),
       .j_reg      (reg_data1), // [rs]
+      .cop_addr   (cop_output),
       .rt_addr    (rt_addr),
       .addr       (ins_addr));
+
+assign cop_input = reg_data2;
+cop cop0(.reg_num(cop_num),
+         .reg_sel(cop_sel),
+         .in_data(cop_input),
+         .next_pc(ins_addr), // TODO: next pc or current pc
+         .reg_wr(cop_wr),
+         .reg_rd(cop_rd),
+         .cop_op(cop_op),
+         .code(cop_code),
+         .out_data(cop_output));
 
 control ctl(.opcode   (opcode),
             .funct    (funct),
@@ -117,7 +138,10 @@ control ctl(.opcode   (opcode),
             .reg_src  (reg_src),
             .reg_dst  (reg_dst),
             .reg_wr   (reg_wr),
-            .reg_in   (reg_in));
+            .reg_in   (reg_in),
+            .cop0_wr  (cop_wr),
+            .cop0_rd  (cop_rd),
+            .cop0_op  (cop_op));
 
 assign dm_addr    = alu_res;
 assign dm_wr_data = reg_data2;
@@ -133,7 +157,7 @@ extend ext(.ext_op (ext_op),
            .im     (im1),
            .out    (ext_data));
 
-// alu
+// reg file
 always @(reg_in) begin
     case (reg_in)
         `REG_IN_RT:
@@ -160,9 +184,10 @@ always @(reg_src) begin
             reg_wr_data <= alu_res;
         `REG_SRC_DM:
             reg_wr_data <= dm_rd_data;
+        `REG_SRC_COP0:
+            reg_wr_data <= cop_output;
     endcase
 end
-
 greg gr(.clk      (clk),
         .reg_wr   (reg_wr),
         .read1    (rs),
@@ -172,6 +197,8 @@ greg gr(.clk      (clk),
         .data1    (reg_data1),
         .data2    (reg_data2));
 
+
+// alu
 assign alu_input1 = reg_data1;
 assign alu_shamt  =shamt;
 always @(alu_src) begin
