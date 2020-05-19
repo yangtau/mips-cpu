@@ -63,9 +63,10 @@ reg [31:0] _out;
 assign out_data = _out;
 
 initial begin
-    `CAUSE  <= 32'b0;
-    `EPC    <= 32'b0;
-    `STATUS <= 32'b0;
+    `CAUSE  = 32'b0;
+    `EPC    = 32'b0;
+    `STATUS = 32'b0;
+    `STATUS[0] <= 1'b1;
 end
 
 always @(*) begin
@@ -105,6 +106,7 @@ always @(*) begin
         `COP_OP_BRK: begin
             `EPC <= next_pc;
             // TODO: goto somewhere
+            // set exl ?
             _out <= 32'h0000_3000;
         end
         default:

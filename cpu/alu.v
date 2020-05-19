@@ -103,11 +103,12 @@ always @(*) begin
         `ALU_OP_SLTU:
             out = (ua < ub) ? 32'h00000001: 32'h00000000;
     endcase
+    $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
 end
 
 // detect overflow for `addu` and `subu`
 // should be traped if overflow
-always @(*) begin
+always @(out) begin
     case (alu_op)
         `ALU_OP_ADDU:
             _overflow = ((a[31] ~^ b[31]) & (a[31] ^ out[31]));

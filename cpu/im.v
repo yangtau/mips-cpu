@@ -36,7 +36,7 @@ assign data = mem[addr[9:2]];
 
 `ifdef IM_DEBUG
 always @(posedge clk) begin
-    $monitor("#im#%h: %h", addr, data);
+    $monitor("#im %h:%h", addr, data);
 end
 `endif
 
