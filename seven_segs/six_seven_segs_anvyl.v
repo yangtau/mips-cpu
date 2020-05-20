@@ -29,7 +29,7 @@ module six_seven_segs_anvyl(
 wire divided_clock;
 wire [23:0] data ;
 
-assign data = 24'h543210 ;
+assign data = 24'h012345 ;
 
 clock_div m_clock_div(.Reset(1'b0),
                       .Clock(Clock),

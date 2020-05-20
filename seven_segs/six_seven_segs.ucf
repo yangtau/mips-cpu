@@ -4,6 +4,7 @@ NET Switch[1] LOC=U4;
 NET Switch[2] LOC=V3;
 NET Switch[3] LOC=P4;
 NET Switch[4] LOC=R4;
+NET Switch[5] LOC= P6;
 #Segment digsplay Enable
 NET En[1] LOC = P16;
 NET En[0] LOC = M17;	
@@ -19,6 +20,7 @@ NET Segs[3] LOC=N15; # 7-seg CD
 NET Segs[4] LOC=AB19; # 7-seg CE
 NET Segs[5] LOC=P20; # 7-seg CF
 NET Segs[6] LOC=Y21; # 7-seg CG
+NET Segs[7]	LOC=P15;  # dot point
 # Clock
 NET Clock LOC=D11;
 

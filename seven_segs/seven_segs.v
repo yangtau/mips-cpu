@@ -22,7 +22,9 @@ module seven_segs(
            input [3:0] Digit,
            input EnableSegs,
            output reg [6:0] Seg) ;
+
 reg [6:0] A_G ;
+
 always @ (Digit or EnableSegs ) begin
     if (EnableSegs)
     case ( Digit )
@@ -64,6 +66,7 @@ always @ (Digit or EnableSegs ) begin
     endcase
     else
         A_G = 7'b0;
+
     Seg = {A_G[0],A_G[1],A_G[2],A_G[3],A_G[4],A_G[5],A_G[6]} ;
 end
 
