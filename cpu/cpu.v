@@ -18,19 +18,12 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-//`include "dm.v"
-//`include "alu.v"
-//`include "reg.v"
-//`include "im.v"
-//`include "pc.v"
 `include "common.v"
-//`include "extend.v"
-//`include "control.v"
-//`include "cop.v"
 
 module cpu(input wire clk,
            input wire rest,
-           output wire overflow);
+           output [31:0] test_out
+          );
 
 wire [31:0] ins_addr;
 wire [31:0] ins;
@@ -114,7 +107,7 @@ pc pc(.clk        (clk),
       .addr       (ins_addr));
 
 assign cop_input = reg_data2;
-cop cop0(.reg_num(reg_data2),
+cop cop0(.reg_num(rd),
          .reg_sel(cop_sel),
          .in_data(cop_input),
          .next_pc(ins_addr), // TODO: next pc or current pc
@@ -125,25 +118,25 @@ cop cop0(.reg_num(reg_data2),
          .out_data(cop_output));
 
 control ctrl(.opcode   (opcode),
-            .funct    (funct),
-            .hint     (shamt),
-            .rs       (rs),
-            .rt       (rt),
-            .rd       (rd),
-            .alu_op   (alu_op),
-            .alu_src  (alu_src),
-            .dm_op    (dm_op),
-            .dm_wr    (dm_wr),
-            .dm_rd    (dm_rd),
-            .ext_op   (ext_op),
-            .pc_op    (pc_op),
-            .reg_src  (reg_src),
-            .reg_dst  (reg_dst),
-            .reg_wr   (reg_wr),
-            .reg_in   (reg_in),
-            .cop0_wr  (cop_wr),
-            .cop0_rd  (cop_rd),
-            .cop0_op  (cop_op));
+             .funct    (funct),
+             .hint     (shamt),
+             .rs       (rs),
+             .rt       (rt),
+             .rd       (rd),
+             .alu_op   (alu_op),
+             .alu_src  (alu_src),
+             .dm_op    (dm_op),
+             .dm_wr    (dm_wr),
+             .dm_rd    (dm_rd),
+             .ext_op   (ext_op),
+             .pc_op    (pc_op),
+             .reg_src  (reg_src),
+             .reg_dst  (reg_dst),
+             .reg_wr   (reg_wr),
+             .reg_in   (reg_in),
+             .cop0_wr  (cop_wr),
+             .cop0_rd  (cop_rd),
+             .cop0_op  (cop_op));
 
 assign dm_addr    = alu_res;
 assign dm_wr_data = reg_data2;
@@ -160,34 +153,40 @@ extend ext(.ext_op (ext_op),
            .out    (ext_data));
 
 // reg file
-always @(reg_in or rd) begin
+always @(*) begin
     case (reg_in)
         `REG_IN_RT:
-            reg_num_rd2 <= rd;
+            reg_num_rd2 = rd;
         `REG_IN_ZERO:
-            reg_num_rd2 <= 5'b0;
+            reg_num_rd2 = 5'b0;
+        default:
+            reg_num_rd2 = rd;
     endcase
 end
 always @(reg_dst or rd or rt) begin
     case (reg_dst)
         `REG_DST_RD:
-            reg_num_wr <= rd;
+            reg_num_wr = rd;
         `REG_DST_RT:
-            reg_num_wr <= rt;
+            reg_num_wr = rt;
         `REG_DST_31:
-            reg_num_wr <= 31;
+            reg_num_wr = 31;
+        default:
+            reg_num_wr = 5'b0;
     endcase
 end
-always @(reg_src or rt_addr or alu_res or dm_rd_data or cop_output) begin
+always @(*) begin
     case (reg_src)
         `REG_SRC_PC:
-            reg_wr_data <= rt_addr;
+            reg_wr_data = rt_addr;
         `REG_SRC_ALU:
-            reg_wr_data <= alu_res;
+            reg_wr_data = alu_res;
         `REG_SRC_DM:
-            reg_wr_data <= dm_rd_data;
+            reg_wr_data = dm_rd_data;
         `REG_SRC_COP0:
-            reg_wr_data <= cop_output;
+            reg_wr_data = cop_output;
+        default:
+            reg_wr_data =  32'b0;
     endcase
 end
 greg gr(.clk      (clk),
@@ -203,12 +202,14 @@ greg gr(.clk      (clk),
 // alu
 assign alu_input1 = reg_data1;
 assign alu_shamt  =shamt;
-always @(alu_src or ext_data or reg_data2) begin
+always @(*) begin
     case (alu_src)
         `ALU_SRC_IM:
-            alu_input2 <= ext_data;
+            alu_input2 = ext_data;
         `ALU_SRC_RT:
-            alu_input2 <= reg_data2;
+            alu_input2 = reg_data2;
+        default:
+            alu_input2 = 32'b0;
     endcase
 end
 alu alu(.clk      (clk),
@@ -219,6 +220,7 @@ alu alu(.clk      (clk),
         .out      (alu_res),
         .zero     (alu_flag_zero),
         .great    (alu_flag_great),
-        .overflow (overflow));
+        .overflow (alu_flag_overflow));
 
+assign test_out = alu_res;
 endmodule

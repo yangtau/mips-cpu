@@ -4,7 +4,7 @@
 // Company:
 // Engineer:
 //
-// Create Date:   19:39:12 05/05/2020
+// Create Date:   17:51:40 05/26/2020
 // Design Name:   control
 // Module Name:   C:/Users/qyang/Code/mips/cpu/tb_control.v
 // Project Name:  cpu
@@ -21,7 +21,7 @@
 // Additional Comments:
 //
 ////////////////////////////////////////////////////////////////////////////////
-`include "control.v"
+`include "common.v"
 module tb_control;
 
 // Inputs
@@ -44,6 +44,9 @@ wire [1:0] reg_src;
 wire [1:0] reg_dst;
 wire reg_wr;
 wire reg_in;
+wire cop0_wr;
+wire cop0_rd;
+wire [2:0] cop0_op;
 
 // Instantiate the Unit Under Test (UUT)
 control uut (
@@ -63,7 +66,10 @@ control uut (
             .reg_src(reg_src),
             .reg_dst(reg_dst),
             .reg_wr(reg_wr),
-            .reg_in(reg_in)
+            .reg_in(reg_in),
+            .cop0_wr(cop0_wr),
+            .cop0_rd(cop0_rd),
+            .cop0_op(cop0_op)
         );
 
 initial begin

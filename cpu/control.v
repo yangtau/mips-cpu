@@ -275,12 +275,14 @@ always @(*) begin
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
             reg_src <= `REG_SRC_ALU;
+            reg_dst <= `REG_DST_RT;
         end
         `OPCODE_ADDIU: begin
             alu_op  <= `ALU_OP_ADDU;
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_SLTI: begin
@@ -288,6 +290,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_SLTIU: begin
@@ -295,6 +298,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_ANDI: begin
@@ -302,6 +306,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_ZE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_ORI: begin
@@ -309,6 +314,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_ZE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_XORI: begin
@@ -316,6 +322,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_ZE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_AUI: begin
@@ -323,6 +330,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_LS;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_ALU;
         end
         `OPCODE_LB: begin
@@ -330,6 +338,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_DM;
             dm_op   <= `DM_OP_BS;
             dm_rd   <= 1'b1;
@@ -339,6 +348,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_DM;
             dm_op   <= `DM_OP_HS;
             dm_rd   <= 1'b1;
@@ -350,6 +360,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_DM;
             dm_op   <= `DM_OP_WD;
             dm_rd   <= 1'b1;
@@ -359,6 +370,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_DM;
             dm_op   <= `DM_OP_BZ;
             dm_rd   <= 1'b1;
@@ -368,6 +380,7 @@ always @(*) begin
             alu_src <= `ALU_SRC_IM;
             ext_op  <= `EXT_OP_SE;
             reg_wr  <= 1'b1;
+            reg_dst <= `REG_DST_RT;
             reg_src <= `REG_SRC_DM;
             dm_op   <= `DM_OP_HZ;
             dm_rd   <= 1'b1;

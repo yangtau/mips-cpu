@@ -67,9 +67,9 @@ always @(posedge clk) begin
 end
 
 `ifdef DM_DEBUG
-always @(posedge clk) begin
-    $monitor("#dm#%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
-end
+// always @(posedge clk) begin
+//     $monitor("#dm#%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
+// end
 `endif
 
 endmodule

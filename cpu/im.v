@@ -18,7 +18,6 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-`define IM_DEBUG
 module im(input  wire        clk,
           input  wire [31:0] addr,
           output wire [31:0] data);
@@ -33,11 +32,5 @@ initial begin
 end
 
 assign data = mem[addr[9:2]];
-
-`ifdef IM_DEBUG
-always @(posedge clk) begin
-    $monitor("#im %h:%h", addr, data);
-end
-`endif
 
 endmodule

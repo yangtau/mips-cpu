@@ -21,7 +21,7 @@
 // Additional Comments:
 //
 ////////////////////////////////////////////////////////////////////////////////
-`include "pc.v"
+`include "common.v"
 module tb_pc;
 
 // Inputs
@@ -33,6 +33,7 @@ reg [15:0] im1;
 reg [25:0] im2;
 reg [3:0] pc_op;
 reg [31:0] j_reg;
+reg [31:0] cop_addr;
 
 // Outputs
 wire [31:0] rt_addr;
@@ -48,6 +49,7 @@ pc uut (
        .im2(im2),
        .pc_op(pc_op),
        .j_reg(j_reg),
+       .cop_addr(cop_addr),
        .rt_addr(rt_addr),
        .addr(addr)
    );
@@ -84,9 +86,14 @@ initial begin
     #10; // 23
     pc_op = `PC_OP_NEXT;
     #10; // 24
-    rest  = 1;
+    // rest  = 1;
     // 0
-
+    pc_op = 1;
+    cop_addr = 32'h3000;
+    zero = 1;
+    im1 = 16'h202a;
+    im2 = 26'h64202a;
+    j_reg = 32'h7;
 
 end
 

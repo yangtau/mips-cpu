@@ -27,11 +27,13 @@ module tb_cpu;
 // Inputs
 reg clk;
 reg rest;
+wire [31:0] test_out;
 
 // Instantiate the Unit Under Test (UUT)
 cpu uut (
         .clk(clk),
-        .rest(rest)
+        .rest(rest),
+        .test_out(test_out)
     );
 
 always begin

@@ -4,13 +4,14 @@
 // Company:
 // Engineer:
 //
-// Create Date:   21:20:23 05/04/2020
+// Create Date:   17:42:57 05/26/2020
 // Design Name:   alu
 // Module Name:   C:/Users/qyang/Code/mips/cpu/tb_alu.v
 // Project Name:  cpu
 // Target Device:
 // Tool versions:
 // Description:
+//
 // Verilog Test Fixture created by ISE for module: alu
 //
 // Dependencies:
@@ -20,10 +21,11 @@
 // Additional Comments:
 //
 ////////////////////////////////////////////////////////////////////////////////
-`include "alu.v"
+`include "common.v"
 module tb_alu;
 
 // Inputs
+reg clk;
 reg [5:0] alu_op;
 reg [31:0] a;
 reg [31:0] b;
@@ -37,6 +39,7 @@ wire overflow;
 
 // Instantiate the Unit Under Test (UUT)
 alu uut (
+        .clk(clk),
         .alu_op(alu_op),
         .a(a),
         .b(b),
@@ -47,8 +50,14 @@ alu uut (
         .overflow(overflow)
     );
 
+always begin
+	clk = ~clk;
+	#10;	
+end
+
 initial begin
     // Initialize Inputs
+    clk = 0;
     alu_op = 0;
     a = 0;
     b = 0;
@@ -57,6 +66,7 @@ initial begin
     // Wait 100 ns for global reset to finish
     #100;
 
+    // Add stimulus here
     // Add stimulus here
     // rotr
     alu_op = `ALU_OP_ROTR;
@@ -89,7 +99,7 @@ initial begin
     alu_op = `ALU_OP_SUBU;
     a      = 32'b1100_0000_0000_0011_0100_0000_0000_0011;
     b      = 32'b0111_1111_1101_0011_1001_1010_1101_0011;
-
 end
+
 endmodule
 

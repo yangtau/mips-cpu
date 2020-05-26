@@ -29,8 +29,8 @@ module alu(input wire        clk,
            output reg       great,
            output reg       overflow);
 
-wire unsigned [31:0] ua;
-wire unsigned [31:0] ub;
+wire [31:0] ua;
+wire [31:0] ub;
 wire signed   [31:0] sa;
 wire signed   [31:0] sb;
 wire signed   [63:0] mul_res;
@@ -118,9 +118,9 @@ always @(*) begin
     great = (out > 0)  ? 1'b1 : 1'b0;
 end
 
-always @(posedge clk) begin
-    $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
-end
+//always @(posedge clk) begin
+//    $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
+//end
 
 
 endmodule

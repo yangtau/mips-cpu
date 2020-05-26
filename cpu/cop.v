@@ -29,14 +29,22 @@ module cop(input  wire [4:0]  reg_num,
            input  wire [19:0] code, // syscall, break
            output reg [31:0] out_data);
 
-reg [31:0] regs [0:31][0:2];
+// reg [31:0] regs [0:31][0:2];
 
-`define COUNT     regs[9][0]  // processor cycle count
-`define COMPARE   regs[11][0]
-`define CAUSE     regs[13][0] // cause of last exception
-`define EPC       regs[14][0] // program counter at last exception
-`define ERROR_EPC regs[30][0] // program counter at last error
-`define STATUS    regs[12][0] // processor status and control
+// `define COUNT     regs[9][0]  // processor cycle count
+// `define COMPARE   regs[11][0]
+// `define CAUSE     regs[13][0] // cause of last exception
+// `define EPC       regs[14][0] // program counter at last exception
+// `define ERROR_EPC regs[30][0] // program counter at last error
+// `define STATUS    regs[12][0] // processor status and control
+reg [31:0] regs[0:31];
+`define COUNT     regs[9]  // processor cycle count
+`define COMPARE   regs[11]
+`define CAUSE     regs[13] // cause of last exception
+`define EPC       regs[14] // program counter at last exception
+`define ERROR_EPC regs[30] // program counter at last error
+`define STATUS    regs[12] // processor status and control
+
 /* status
 ```
 +----+----+-------------------------------------------+
@@ -70,9 +78,11 @@ always @(*) begin
         `COP_OP_MV:
             // mfc0 mtc0
             if (reg_wr)
-                regs[reg_num][reg_sel] = in_data;
+                // regs[reg_num][reg_sel] = in_data;
+                regs[reg_num] = in_data;
             else if (reg_rd)
-                out_data = regs[reg_num][reg_sel];
+                // out_data = regs[reg_num][reg_sel];
+                out_data = regs[reg_num];
         `COP_OP_EN: begin
             // ei
             out_data = `STATUS;

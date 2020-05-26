@@ -17,50 +17,50 @@ module pc(input wire         clk,
           input wire  [3:0]  pc_op,
           input wire  [31:0] j_reg,
           input wire  [31:0] cop_addr,
-          output reg  [31:0] rt_addr,
-          output reg  [31:0] addr);
+          output wire [31:0] rt_addr,
+          output wire [31:0] addr);
 
 parameter INITAL_ADDR = 32'b0;
 
+reg  [31:0] next_pc;
 reg  [31:0] pc_r;
-wire [31:0] pc_plus4;
-wire [31:0] br;     // branch offset
-wire [31:0] jmp;      // jump addr
-
 
 initial begin
     pc_r <= INITAL_ADDR;
 end
 
-assign pc_plus4 = pc_r + 4;
-assign br       = {{14{im1[15]}}, im1, 2'b00} + pc_r;
-assign jmp      = {pc_r[31:30], im2, 2'b00};
+wire [31:0] pc_plus4 = pc_r + 4;
+wire [31:0] br       = {{14{im1[15]}}, im1, 2'b00} + pc_plus4;     // branch offset
+wire [31:0] jmp      = {pc_r[31:30], im2, 2'b00};    // jump addr
 
-always @(posedge clk) begin
-    rt_addr <= pc_plus4;
-    if (rest)
-        pc_r <= INITAL_ADDR;
-    else if (
-        (pc_op == `PC_OP_BZ && zero) ||
-        (pc_op == `PC_OP_BNZ && !zero) ||
-        (pc_op == `PC_OP_BG && great) ||
-        (pc_op == `PC_OP_BNG && !great) ||
-        (pc_op == `PC_OP_BGZ && (zero || great)) ||
-        (pc_op == `PC_OP_BNGNZ && (!zero && !great))
+always @(*) begin
+    $monitor("addr %x pc_op:%x zero:%x great:%x",addr, pc_op, zero, great);
+    if (
+        ((pc_op == `PC_OP_BZ) && zero) ||
+        ((pc_op == `PC_OP_BNZ) && !zero) ||
+        ((pc_op == `PC_OP_BG) && great) ||
+        ((pc_op == `PC_OP_BNG) && !great) ||
+        ((pc_op == `PC_OP_BGZ) && (zero || great)) ||
+        ((pc_op == `PC_OP_BNGNZ) && (!zero && !great))
     )
-        pc_r <= br;
+        next_pc = br;
     else if (pc_op == `PC_OP_J)
-        pc_r <=  jmp;
+        next_pc =  jmp;
     else if (pc_op == `PC_OP_JR)
-        pc_r <= j_reg;
+        next_pc = j_reg;
     else if (pc_op == `PC_OP_COP0)
-        pc_r <= cop_addr;
+        next_pc = cop_addr;
     else
-        pc_r <= pc_plus4;
-
-    addr = pc_r;
-    $monitor("#pc: %h, op:%h", addr, pc_op);
+        next_pc = pc_plus4;
 end
 
+assign rt_addr = pc_plus4;
+assign addr    = pc_r;
+always @(posedge clk) begin
+    if (rest)
+        pc_r <= INITAL_ADDR;
+    else
+        pc_r <= next_pc;
+end
 
 endmodule

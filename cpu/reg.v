@@ -21,6 +21,7 @@
 
 
 module greg(input  wire        clk,
+            input  wire        rst,
             input  wire        reg_wr,
             input  wire [4:0]  read1,
             input  wire [4:0]  read2,
@@ -31,15 +32,20 @@ module greg(input  wire        clk,
 
 reg [31:0] mem [0:31];  // 32-bit memory with 32 entries
 
+integer i;
 initial begin
-    mem[0]=32'd0;
+    for (i=0; i < 32; i=i+1)
+        mem[i] <= 32'b0;
 end
 
 assign data1 = mem[read1][31:0];
 assign data2 = mem[read2][31:0];
 
 always @(posedge clk) begin
-    if (reg_wr && wr_num != 5'd0) begin
+    if (rst)
+        for (i=0; i < 32; i=i+1)
+            mem[i] <= 32'b0;
+    else if (reg_wr && wr_num != 5'd0) begin
         mem[wr_num] <= wr_data;
     end
 end
