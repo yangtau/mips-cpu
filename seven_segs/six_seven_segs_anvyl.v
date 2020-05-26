@@ -18,8 +18,6 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-`include "clock_div.v"
-`include "segs_ctrl.v"
 module six_seven_segs_anvyl(
            input Clock,
            input [5:0] Switch,

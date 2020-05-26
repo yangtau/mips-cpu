@@ -1,0 +1,25 @@
+#Segment digsplay Enable
+NET en LOC = M17; # 7-seg Enable 最右1个
+##### 7-seg display #####
+NET segs[0] LOC=AA21; # 7-seg CA
+NET segs[1] LOC=AA22; # 7-seg CB
+NET segs[2] LOC=Y22; # 7-seg CC
+NET segs[3] LOC=N15; # 7-seg CD
+NET segs[4] LOC=AB19; # 7-seg CE
+NET segs[5] LOC=P20; # 7-seg CF
+NET segs[6] LOC=Y21; # 7-seg CG
+### Keypad
+# rows
+NET row[0] LOC=E4;
+NET row[1] LOC=F3;
+NET row[2] LOC=G8;
+NET row[3] LOC=G7;
+# cols
+NET col[0] LOC=H8;
+NET col[1] LOC=J7;
+NET col[2] LOC=K8;
+NET col[3] LOC=K7;
+
+# clock
+NET clk LOC=D11;
+

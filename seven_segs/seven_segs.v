@@ -67,7 +67,7 @@ always @ (Digit or EnableSegs ) begin
     else
         A_G = 7'b0;
 
-    Seg = {A_G[0],A_G[1],A_G[2],A_G[3],A_G[4],A_G[5],A_G[6]} ;
+    Seg = {A_G[0],A_G[1],A_G[2],A_G[3],A_G[4],A_G[5],A_G[6]};
 end
 
 endmodule

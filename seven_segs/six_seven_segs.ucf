@@ -23,4 +23,3 @@ NET Segs[6] LOC=Y21; # 7-seg CG
 NET Segs[7]	LOC=P15;  # dot point
 # Clock
 NET Clock LOC=D11;
-

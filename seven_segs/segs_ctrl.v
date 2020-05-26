@@ -18,7 +18,6 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-`include "seven_segs.v"
 module segs_ctrl(
            input Reset ,
            input Clock ,

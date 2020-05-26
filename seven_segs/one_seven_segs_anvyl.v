@@ -18,7 +18,6 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-`include "seven_segs.v"
 module one_seven_segs_anvyl(
            input [3:0] Switch,
            input Btn0,
