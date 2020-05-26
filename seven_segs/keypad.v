@@ -25,21 +25,33 @@ module keypad(input            clk,
               output reg [3:0] key_val         // 键盘值
              );
 
+clock_div clk_d(.Reset(rst),
+                .Clock(clk),
+                .DividedClock(div_clk));
 
 //++++++++++++++++++++++++++++++++++++++
 // 状态机部分 开始
 //++++++++++++++++++++++++++++++++++++++
 // 状态数较少，独热码编码
-parameter NO_KEY_PRESSED = 6'b000_001;  // 没有按键按下
-parameter SCAN_COL0      = 6'b000_010;  // 扫描第0列
-parameter SCAN_COL1      = 6'b000_100;  // 扫描第1列
-parameter SCAN_COL2      = 6'b001_000;  // 扫描第2列
-parameter SCAN_COL3      = 6'b010_000;  // 扫描第3列
-parameter KEY_PRESSED    = 6'b100_000;  // 有按键按下
+// parameter NO_KEY_PRESSED = 6'b000_001;  // 没有按键按下
+// parameter SCAN_COL0      = 6'b000_010;  // 扫描第0列
+// parameter SCAN_COL1      = 6'b000_100;  // 扫描第1列
+// parameter SCAN_COL2      = 6'b001_000;  // 扫描第2列
+// parameter SCAN_COL3      = 6'b010_000;  // 扫描第3列
+// parameter KEY_PRESSED    = 6'b100_000;  // 有按键按下
 
-reg [5:0] current_state, next_state;    // 现态、次态
+// reg [5:0] current_state, next_state;    // 现态、次态
 
-always @ (posedge clk, posedge rst)
+parameter NO_KEY_PRESSED = 3'b000;  // 没有按键按下
+parameter SCAN_COL0      = 3'b001;  // 扫描第0列
+parameter SCAN_COL1      = 3'b010;  // 扫描第1列
+parameter SCAN_COL2      = 3'b011;  // 扫描第2列
+parameter SCAN_COL3      = 3'b100;  // 扫描第3列
+parameter KEY_PRESSED    = 3'b101;  // 有按键按下
+
+reg [2:0] current_state, next_state;    // 现态、次态
+
+always @ (posedge div_clk, posedge rst)
     if (rst)
         current_state <= NO_KEY_PRESSED;
     else
@@ -78,6 +90,8 @@ always @ (*) begin
                 next_state = KEY_PRESSED;
             else
                 next_state = NO_KEY_PRESSED;
+        default:
+            next_state = NO_KEY_PRESSED;
     endcase
 end
 
@@ -86,7 +100,7 @@ reg       key_pressed_flag;             // 键盘按下标志
 reg [3:0] col_val, row_val;             // 列值、行值
 
 // 根据次态，给相应寄存器赋值
-always @ (posedge clk, posedge rst)
+always @ (posedge div_clk, posedge rst)
     if (rst) begin
         col              <= 4'h0;
         key_pressed_flag <=    0;
@@ -121,7 +135,7 @@ always @ (posedge clk, posedge rst)
 //++++++++++++++++++++++++++++++++++++++
 // 扫描行列值部分 开始
 //++++++++++++++++++++++++++++++++++++++
-always @ (posedge clk, posedge rst)
+always @ (posedge div_clk, posedge rst)
     if (rst)
         key_val <= 4'h0;
     else
