@@ -20,7 +20,7 @@ module pc(input wire         clk,
           output wire [31:0] rt_addr,
           output wire [31:0] addr);
 
-parameter INITAL_ADDR = 32'b0;
+parameter INITAL_ADDR = 32'h80000200;
 
 reg  [31:0] next_pc;
 reg  [31:0] pc_r;

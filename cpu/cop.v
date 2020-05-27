@@ -29,6 +29,7 @@ module cop(input  wire [4:0]  reg_num,
            input  wire [19:0] code, // syscall, break
            output reg [31:0] out_data);
 
+parameter EXCEPTION_ENTRY = 32'h80000000;
 // reg [31:0] regs [0:31][0:2];
 
 // `define COUNT     regs[9][0]  // processor cycle count
@@ -107,13 +108,13 @@ always @(*) begin
         `COP_OP_SYS: begin
             `EPC = next_pc;
             // TODO: goto somewhere
-            out_data = 32'h0000_3000;
+            out_data = EXCEPTION_ENTRY;
         end
         `COP_OP_BRK: begin
             `EPC = next_pc;
             // TODO: goto somewhere
             // set exl ?
-            out_data = 32'h0000_3000;
+            out_data = EXCEPTION_ENTRY;
         end
         default:
             ;

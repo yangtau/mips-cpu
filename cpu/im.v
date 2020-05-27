@@ -23,14 +23,21 @@ module im(input  wire        clk,
           output wire [31:0] data);
 
 parameter NMEM   = 256; // NMEM * 32 bits for instructions
-parameter IM_TXT = "im.txt";
+parameter NBIT = 8;
+parameter IM_TXT1 = "im1.txt";
+parameter IM_TXT2 = "im2.txt";
 
-reg [31:0] mem [0:NMEM-1];
+reg [31:0] mem1 [0:NMEM-1]; // start with 9fc00000
+
+reg [31:0] mem2 [0:NMEM-1]; // start with 80000000
 
 initial begin
-    $readmemh(IM_TXT, mem, 0, NMEM-1);
+    $readmemh(IM_TXT1, mem1, 0, NMEM-1);
+    $readmemh(IM_TXT2, mem2, 0, NMEM-1);
 end
 
-assign data = mem[addr[9:2]];
+assign data = addr[31:20] == 12'h9fc ?
+       mem1[addr[NBIT+1:2]] :
+       mem2[addr[NBIT+1:2]] ;
 
 endmodule
