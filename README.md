@@ -220,6 +220,8 @@ module greg(input  wire        clk,
 
 |          | RegDst | RegWr | ALUSrc | ALUOp | MemWr | MemRd | RegSrc | ExtOp | PCOp  | DMOp | RegIn |
 | -------- | ------ | ----- | ------ | ----- | ----- | ----- | ------ | ----- | ----- | ---- | ----- |
+| `ins`    | rt     | 1     | 0      | INS   | 0     | 0     | alu    | x     | NEXT  | x    | rt    |
+| `ext`    | rt     | 1     | 0      | EXT   | 0     | 0     | alu    | x     | NEXT  | x    | rt    |
 | `aui`    | rt     | 1     | 1      | ADD   | 0     | 0     | alu    | LS    | NEXT  | x    | rt    |
 | `andi`   | rt     | 1     | 1      | AND   | 0     | 0     | alu    | ZE    | NEXT  | x    | rt    |
 | `ori`    | rt     | 1     | 1      | OR    | 0     | 0     | alu    | ZE    | NEXT  | x    | rt    |

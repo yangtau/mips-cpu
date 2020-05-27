@@ -75,7 +75,12 @@
 `define ALU_OP_SLTU  6'b101011
 `define ALU_OP_NOP   6'b111111
 
-// Opcode
+// bit field operation
+`define ALU_OP_INS 6'b001000
+`define ALU_OP_EXT 6'b001001
+//< ALU Op
+
+//> Opcode
 `define OPCODE_SPECIAL 6'b000000 // f
 `define OPCODE_REGIMM  6'b000001 // f
 `define OPCODE_J       6'b000010
@@ -147,8 +152,9 @@
 `define OPCODE_SDC1  6'b111101
 `define OPCODE_SDC2  6'b111110
 `define OPCODE_RV10  6'b111111
+//< Opcode
 
-// funct
+//> funct
 `define FUNCT_SLL   6'b000000
 `define FUNCT_MOVCI 6'b000001
 `define FUNCT_SRL   6'b000010 // f
@@ -220,17 +226,18 @@
 //`define FUNCT_      6'b111101
 //`define FUNCT_      6'b111110
 //`define FUNCT_      6'b111111
-
+//< funct
 
 // rt field
 `define RT_BLTZ 5'b00000
 `define RT_BGEZ 5'b00001
 `define RT_BAL  5'b10001
 
-// COP Op
+//> COP Op
 `define COP_OP_MV  3'b001
 `define COP_OP_EN  3'b010 // enable interupt
 `define COP_OP_DIS 3'b011 // disable interupt
 `define COP_OP_SYS 3'b100 // system call
 `define COP_OP_RET 3'b101 // eret
 `define COP_OP_BRK 3'b110 // break
+//< COP Op

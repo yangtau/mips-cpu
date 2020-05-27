@@ -23,7 +23,8 @@ module alu(input wire        clk,
            input wire [5:0]  alu_op,
            input wire [31:0] a,
            input wire [31:0] b,
-           input wire [4:0]  shamt,
+           input wire [4:0]  shamt, // or last byte
+           input wire [4:0]  ins15_11, // msbd, msb
            output reg [31:0] out,
            output reg       zero,
            output reg       great,
@@ -37,6 +38,7 @@ wire signed   [63:0] mul_res;
 wire signed   [63:0] mulu_res;
 wire          [63:0] rot;
 
+wire [31:0] ins_mask = (32'hffff_ffff >> (31-(ins15_11 - shamt))) << shamt;
 
 reg [64:0] _temp;
 
@@ -113,14 +115,28 @@ always @(*) begin
             out = (sa < sb) ? 32'h00000001: 32'h00000000;
         `ALU_OP_SLTU:
             out = (ua < ub) ? 32'h00000001: 32'h00000000;
+        `ALU_OP_INS: begin
+            if (shamt > ins_mask) begin
+                // lsb > msb
+                // TODO: UNPREDICTABLE
+            end
+            out = (ub & ~ins_mask) | ((ua<<shamt)&ins_mask);
+        end
+        `ALU_OP_EXT: begin
+            if (ins15_11 + shamt > 31) begin
+                // lsb + msbd > 31
+                // TODO: UNPREDICTABLE
+            end
+            out = (32'hffff_ffff >> (31-ins15_11)) & (ua >> shamt);
+        end
     endcase
     zero  = (out == 0) ? 1'b1 : 1'b0;
     great = (out > 0)  ? 1'b1 : 1'b0;
 end
 
-//always @(posedge clk) begin
-//    $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
-//end
+always @(posedge clk) begin
+    $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
+end
 
 
 endmodule

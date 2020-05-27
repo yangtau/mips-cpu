@@ -455,6 +455,21 @@ always @(*) begin
             end
         end
 
+        `OPCODE_SPECIAL3: begin
+            reg_dst = `REG_DST_RT;
+            reg_wr = 1'b1;
+            alu_src = `ALU_SRC_RT;
+            case (funct)
+                6'b000100: begin
+                    //ins
+                    alu_op = `ALU_OP_INS;
+                end
+                6'b000000: begin
+                    // ext
+                    alu_op = `ALU_OP_EXT;
+                end
+            endcase
+        end
         default:
             // TODO
             ;
