@@ -38,13 +38,20 @@ parameter EXCEPTION_ENTRY = 32'h80000000;
 // `define EPC       regs[14][0] // program counter at last exception
 // `define ERROR_EPC regs[30][0] // program counter at last error
 // `define STATUS    regs[12][0] // processor status and control
-reg [31:0] regs[0:31];
-`define COUNT     regs[9]  // processor cycle count
-`define COMPARE   regs[11]
-`define CAUSE     regs[13] // cause of last exception
-`define EPC       regs[14] // program counter at last exception
-`define ERROR_EPC regs[30] // program counter at last error
-`define STATUS    regs[12] // processor status and control
+//reg [31:0] regs[0:31];
+//`define COUNT     regs[9]  // processor cycle count
+//`define COMPARE   regs[11]
+//`define CAUSE     regs[13] // cause of last exception
+//`define EPC       regs[14] // program counter at last exception
+//`define ERROR_EPC regs[30] // program counter at last error
+//`define STATUS    regs[12] // processor status and control
+
+reg[31:0] COUNT    ;// regs[9]  // processor cycle count
+reg[31:0] COMPARE  ;// regs[11]
+reg[31:0] CAUSE    ;// regs[13] // cause of last exception
+reg[31:0] EPC      ;// regs[14] // program counter at last exception
+reg[31:0] ERROR_EPC;// regs[30] // program counter at last error
+reg[31:0] STATUS   ;// regs[12] // processor status and control
 
 /* status
 ```
@@ -68,56 +75,94 @@ reg [31:0] regs[0:31];
 */
 
 initial begin
-    `CAUSE  = 32'b0;
-    `EPC    = 32'b0;
-    `STATUS = 32'b0;
-    `STATUS[0] <= 1'b1;
+    CAUSE  = 32'b0;
+    EPC    = 32'b0;
+    STATUS = 32'b0;
+    STATUS[0] <= 1'b1;
 end
 
 always @(*) begin
     case (cop_op)
         `COP_OP_MV:
             // mfc0 mtc0
-            if (reg_wr)
+            //`define COUNT     regs[9]  // processor cycle count
+            //`define COMPARE   regs[11]
+            //`define CAUSE     regs[13] // cause of last exception
+            //`define EPC       regs[14] // program counter at last exception
+            //`define ERROR_EPC regs[30] // program counter at last error
+            //`define STATUS    regs[12] // processor status and control
+            if (reg_wr) begin
                 // regs[reg_num][reg_sel] = in_data;
-                regs[reg_num] = in_data;
-            else if (reg_rd)
+                // regs[reg_num] = in_data;
+                case (reg_num)
+                    9:
+                        COUNT = in_data;
+                    11:
+                        COMPARE = in_data;
+                    13:
+                        CAUSE = in_data;
+                    14:
+                        EPC = in_data;
+                    12:
+                        STATUS = in_data;
+                    30:
+                        ERROR_EPC = in_data;
+                    default:
+                        $display("#cop0 unknown reg number: %x", reg_num);
+                endcase
+            end
+            else if (reg_rd) begin
                 // out_data = regs[reg_num][reg_sel];
-                out_data = regs[reg_num];
+                // out_data = regs[reg_num];
+                case (reg_num)
+                    9:
+                        out_data = COUNT;
+                    11:
+                        out_data = COMPARE;
+                    13:
+                        out_data = CAUSE;
+                    14:
+                        out_data = EPC;
+                    12:
+                        out_data = STATUS;
+                    30:
+                        out_data = ERROR_EPC;
+                    default:
+                        $display("#cop0 unknown reg number: %x", reg_num);
+                endcase
+            end
         `COP_OP_EN: begin
             // ei
-            out_data = `STATUS;
-            `STATUS[0] = 1'b1;
+            out_data = STATUS;
+            STATUS[0] = 1'b1;
         end
         `COP_OP_DIS: begin
             // di
-            out_data = `STATUS;
-            `STATUS[0] = 1'b0;
+            out_data = STATUS;
+            STATUS[0] = 1'b0;
         end
         `COP_OP_RET:
-            if (`STATUS[2]) begin
+            if (STATUS[2]) begin
                 // error
-                out_data = `ERROR_EPC;
-                `STATUS[2] = 1'b0;
+                out_data = ERROR_EPC;
+                STATUS[2] = 1'b0;
             end
             else begin
                 // exception
-                out_data = `EPC;
-                `STATUS[1] = 1'b0;
+                out_data = EPC;
+                STATUS[1] = 1'b0;
             end
         `COP_OP_SYS: begin
-            `EPC = next_pc;
+            EPC = next_pc;
             // TODO: goto somewhere
             out_data = EXCEPTION_ENTRY;
         end
         `COP_OP_BRK: begin
-            `EPC = next_pc;
+            EPC = next_pc;
             // TODO: goto somewhere
             // set exl ?
             out_data = EXCEPTION_ENTRY;
         end
-        default:
-            ;
     endcase
 end
 

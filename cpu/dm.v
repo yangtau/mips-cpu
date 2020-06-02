@@ -34,7 +34,7 @@ reg [31:0] mem[0:NMEM-1];
 
 reg [31:0] _r;
 
-always @(*) begin
+always @(negedge clk) begin
     _r = mem[addr[NBIT+1:2]][31:0];
     if (dm_r) begin
         case (dm_op)
@@ -67,9 +67,9 @@ always @(posedge clk) begin
 end
 
 `ifdef DM_DEBUG
-// always @(posedge clk) begin
-//     $monitor("#dm#%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
-// end
+ always @(posedge clk) begin
+     $display("#dm#%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
+ end
 `endif
 
 endmodule

@@ -19,10 +19,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
-module mips;//(input clk, input rst);
+module mips(/* input clk, input rst*/
+           output wire [`MFP_N_LED-1:0] io_led,
+           input wire [`MFP_N_SW-1:0] io_switch,
+           input wire [`MFP_N_PB-1:0] io_btn,
+           input wire [3:0] io_keypad_row,
+           output wire [3:0] io_keypad_col,
+           output wire [5:0] io_seg_enables,
+           output wire [7:0] io_seven_seg_n
+       );
 
 reg clk;
 reg rst;
+wire div_clk;
+
+clock_div clkdiv(.rst(rst),
+          .clk(clk),
+          .div_clk(div_clk));
 
 always  begin
     clk = ~clk;
@@ -96,7 +109,7 @@ wire        alu_flag_overflow;
 
 
 always @(posedge clk) begin
-    $monitor("ins:%x addr:%x alu_res: %x", ins, ins_addr, alu_res);
+    $display("ins:%x addr:%x alu_res: %x", ins, ins_addr, alu_res);
 end
 
 im im(.clk  (clk),
@@ -182,15 +195,24 @@ alu alu(.clk      (clk),
         .overflow (alu_flag_overflow));
 //< alu
 
-//> dm
-dm dm (.clk   (clk),
-       .dm_w  (dm_wr),
-       .dm_r  (dm_rd),
-       .addr  (alu_res),
-       .wdata (reg_data2),
-       .dm_op (dm_op),
-       .rdata (dm_data));
-//< dm
+//> peripheral
+peripheral periph (.clk   (clk),
+                   .clk_5hz(div_clk), // TODO: clk
+                   .rst   (rst),
+                   .dm_w  (dm_wr),
+                   .dm_r  (dm_rd),
+                   .addr  (alu_res),
+                   .wdata (reg_data2),
+                   .dm_op (dm_op),
+                   .rdata (dm_data),
+                   .io_led(io_led),
+                   .io_switch(io_switch),
+                   .io_btn(io_btn),
+                   .io_keypad_row(io_keypad_row),
+                   .io_keypad_col(io_keypad_col),
+                   .io_seg_enables(io_seg_enables),
+                   .io_seven_seg_n(io_seven_seg_n));
+//< peripheral
 
 //> cop0
 wire [2:0]  cop_sel = ins[2:0];

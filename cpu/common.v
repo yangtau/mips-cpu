@@ -241,3 +241,14 @@
 `define COP_OP_RET 3'b101 // eret
 `define COP_OP_BRK 3'b110 // break
 //< COP Op
+
+
+//> 
+// Physical bit-width of memory-mapped I/O interfaces
+`define MFP_N_LED             8
+`define MFP_N_SW              8
+`define MFP_N_PB              3
+
+`define H_RAM_RESET_ADDR_WIDTH  (8)   // each block is 256 Bytes , the total size is  1 KB
+`define H_RAM_ADDR_WIDTH		  (12)  // each block is 4K  Bytes , the total size is 16 KB
+//<

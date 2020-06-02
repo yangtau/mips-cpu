@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module im(input  wire        clk,
           input  wire [31:0] addr,
-          output wire [31:0] data);
+          output reg [31:0] data);
 
 parameter NMEM   = 256; // NMEM * 32 bits for instructions
 parameter NBIT = 8;
@@ -36,8 +36,19 @@ initial begin
     $readmemh(IM_TXT2, mem2, 0, NMEM-1);
 end
 
-assign data = addr[31:20] == 12'h9fc ?
-       mem1[addr[NBIT+1:2]] :
-       mem2[addr[NBIT+1:2]] ;
+always @(*) begin
+    case (addr[31:20])
+        12'h9fc:
+            data <= mem1[addr[NBIT+1:2]];
+        12'h800:
+            data <= mem2[addr[NBIT+1:2]];
+        default:
+            $display($time , "#im  invalid address: %x" , addr) ;
+    endcase
+end
+//
+//assign data = addr[31:20] == 12'h9fc ?
+//       mem1[addr[NBIT+1:2]] :
+//       mem2[addr[NBIT+1:2]] ;
 
 endmodule

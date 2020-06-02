@@ -135,7 +135,7 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
-    $monitor("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
+    $display("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
 end
 
 
