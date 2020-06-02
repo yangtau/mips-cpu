@@ -19,35 +19,33 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
-module mips(/* input clk, input rst*/
-           output wire [`MFP_N_LED-1:0] io_led,
-           input wire [`MFP_N_SW-1:0] io_switch,
-           input wire [`MFP_N_PB-1:0] io_btn,
-           input wire [3:0] io_keypad_row,
-           output wire [3:0] io_keypad_col,
-           output wire [5:0] io_seg_enables,
-           output wire [7:0] io_seven_seg_n
-       );
+module mips(input clk, input rst,
+            output wire [`MFP_N_LED-1:0] io_led,
+            input wire [`MFP_N_SW-1:0] io_switch,
+            input wire [`MFP_N_PB-1:0] io_btn,
+            input wire [3:0] io_keypad_row,
+            output wire [3:0] io_keypad_col,
+            output wire [5:0] io_seg_enables,
+            output wire [7:0] io_seven_seg_n
+           );
 
+
+/*
 reg clk;
 reg rst;
-wire div_clk;
-
-clock_div clkdiv(.rst(rst),
-          .clk(clk),
-          .div_clk(div_clk));
-
+ 
 always  begin
     clk = ~clk;
     #10;
 end
-
+ 
 initial begin
     clk = 1'b1;
     rst = 1'b1;
     #100;
     rst = 1'b0;
 end
+*/
 
 wire [31:0] ins_addr;
 wire [31:0] ins;
@@ -111,6 +109,11 @@ wire        alu_flag_overflow;
 always @(posedge clk) begin
     $display("ins:%x addr:%x alu_res: %x", ins, ins_addr, alu_res);
 end
+
+wire div_clk;
+clock_div clkdiv(.rst(rst),
+                 .clk(clk),
+                 .div_clk(div_clk));
 
 im im(.clk  (clk),
       .addr (ins_addr),
