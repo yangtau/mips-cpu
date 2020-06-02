@@ -209,7 +209,7 @@ module greg(input  wire        clk,
 - **ALUOp**:  ALU 运算类型，详见 `common.v` 中的定义
 
 - **PCOp**：NEXT, BZ (branch if `zero`), BNZ (branch if not `zero`), BG (branch if `great`), BNG (branch if not `great` ),  NGNZ (branch if not `zero` and not `great`),  BGZ (branch if `zero` or `great`), J, JA
-  
+     
 - **DataMemOp**: BS (sign extend byte)，BZ (zero extend byte)，HS，HZ，W，SB，SH
 
 - **RegSrc**: 决定要写入寄存器的数据，可选值：PC (rt_addr), ALU (alu_rs), MEM (dm_data), COP0.
