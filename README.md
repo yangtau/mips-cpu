@@ -299,7 +299,7 @@ ExtOp  = x
 | `di`     | rt     | 1     | cop0   | NEXT     | x     | 0     | 1 (status) | DIS   |
 | `syscal` | x      | 0     | x      | COP_ADDR | x     | 0     | 0          | SYS   |
 | `eret`   | x      | 0     | x      | COP_ADDR | x     | 0     | 0          | RET   |
-| `break`  |        |       |        |          | x     |       |            |       |
+| `break`  | x      | 0     | x      | COP_ADDR | x     | 0     | 0          | BRK   |
 
 ## 指令测试
 | 指令           | 测试结果 | 备注           |

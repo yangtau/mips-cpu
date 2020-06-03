@@ -30,6 +30,8 @@ always @(*) begin
             out <= {{16{1'b0}}, im};
         `EXT_OP_LS:
             out <= {im, {16{1'b0}}};
+        `EXT_OP_NOP:
+            out <= 32'h0;
     endcase
 end
 

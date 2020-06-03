@@ -18,18 +18,20 @@
 `define ALU_SRC_RT 1'b0
 
 // Extend Op
-`define EXT_OP_SE 2'b01 // sign extend
-`define EXT_OP_ZE 2'b10 // zero extend
-`define EXT_OP_LS 2'b11 // left shift for 16bits
+`define EXT_OP_NOP 2'b00
+`define EXT_OP_SE  2'b01 // sign extend
+`define EXT_OP_ZE  2'b10 // zero extend
+`define EXT_OP_LS  2'b11 // left shift for 16bits
 
 // DataMem Op
-`define DM_OP_BS 3'b001 // load sign extended byte
-`define DM_OP_BZ 3'b011 // zero extended byte
-`define DM_OP_HS 3'b010 // sign extend half word
-`define DM_OP_HZ 3'b110 // zero extend half word
-`define DM_OP_SB 3'b100 // store byte
-`define DM_OP_SH 3'b101 // store half word
-`define DM_OP_WD 3'b111 // store or load word
+`define DM_OP_NOP 3'b000
+`define DM_OP_BS  3'b001 // load sign extended byte
+`define DM_OP_BZ  3'b011 // zero extended byte
+`define DM_OP_HS  3'b010 // sign extend half word
+`define DM_OP_HZ  3'b110 // zero extend half word
+`define DM_OP_SB  3'b100 // store byte
+`define DM_OP_SH  3'b101 // store half word
+`define DM_OP_WD  3'b111 // store or load word
 
 // PC Op
 `define PC_OP_NEXT  4'b0001
@@ -234,6 +236,7 @@
 `define RT_BAL  5'b10001
 
 //> COP Op
+`define COP_OP_NOP 3'b000
 `define COP_OP_MV  3'b001
 `define COP_OP_EN  3'b010 // enable interupt
 `define COP_OP_DIS 3'b011 // disable interupt

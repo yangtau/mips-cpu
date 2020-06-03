@@ -19,17 +19,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
-module cop(input  wire [4:0]  reg_num,
+module cop(input wire clk,
+           input  wire [4:0]  reg_num,
            input  wire [2:0]  reg_sel,
            input  wire [31:0] in_data,
            input  wire [31:0] next_pc,
            input  wire        reg_wr,
            input  wire        reg_rd,
-           input  wire [2:0]  cop_op,
+           input  wire [3:0]  cop_op,
            input  wire [19:0] code, // syscall, break
            output reg [31:0] out_data);
 
-parameter EXCEPTION_ENTRY = 32'h80000000;
+parameter EXCEPTION_ENTRY = 32'h80000180;
 // reg [31:0] regs [0:31][0:2];
 
 // `define COUNT     regs[9][0]  // processor cycle count
@@ -81,37 +82,13 @@ initial begin
     STATUS[0] <= 1'b1;
 end
 
-always @(*) begin
+always @(posedge clk, cop_op, reg_rd) begin
     case (cop_op)
+        `COP_OP_NOP:
+            out_data = 32'b0;
         `COP_OP_MV:
-            // mfc0 mtc0
-            //`define COUNT     regs[9]  // processor cycle count
-            //`define COMPARE   regs[11]
-            //`define CAUSE     regs[13] // cause of last exception
-            //`define EPC       regs[14] // program counter at last exception
-            //`define ERROR_EPC regs[30] // program counter at last error
-            //`define STATUS    regs[12] // processor status and control
-            if (reg_wr) begin
-                // regs[reg_num][reg_sel] = in_data;
-                // regs[reg_num] = in_data;
-                case (reg_num)
-                    9:
-                        COUNT = in_data;
-                    11:
-                        COMPARE = in_data;
-                    13:
-                        CAUSE = in_data;
-                    14:
-                        EPC = in_data;
-                    12:
-                        STATUS = in_data;
-                    30:
-                        ERROR_EPC = in_data;
-                    default:
-                        $display("#cop0 unknown reg number: %x", reg_num);
-                endcase
-            end
-            else if (reg_rd) begin
+            // mfc0
+            if (reg_rd) begin
                 // out_data = regs[reg_num][reg_sel];
                 // out_data = regs[reg_num];
                 case (reg_num)
@@ -128,7 +105,7 @@ always @(*) begin
                     30:
                         out_data = ERROR_EPC;
                     default:
-                        $display("#cop0 unknown reg number: %x", reg_num);
+                        $display("#cop0 read unknown reg number: %x", reg_num);
                 endcase
             end
         `COP_OP_EN: begin
@@ -163,7 +140,34 @@ always @(*) begin
             // set exl ?
             out_data = EXCEPTION_ENTRY;
         end
+        default:
+            $display("#cop0 error: unkown op %d", cop_op);
     endcase
+
+end
+
+always @(negedge clk) begin
+    // mtc0
+    if (reg_wr && cop_op == `COP_OP_MV) begin
+        // regs[reg_num][reg_sel] = in_data;
+        // regs[reg_num] = in_data;
+        case (reg_num)
+            9:
+                COUNT = in_data;
+            11:
+                COMPARE = in_data;
+            13:
+                CAUSE = in_data;
+            14:
+                EPC = in_data;
+            12:
+                STATUS = in_data;
+            30:
+                ERROR_EPC = in_data;
+            default:
+                $display("#cop0 write unknown reg number: %x", reg_num);
+        endcase
+    end
 end
 
 endmodule

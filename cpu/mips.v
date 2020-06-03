@@ -19,33 +19,37 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
-module mips(input clk, input rst,
-            output wire [`MFP_N_LED-1:0] io_led,
-            input wire [`MFP_N_SW-1:0] io_switch,
-            input wire [`MFP_N_PB-1:0] io_btn,
-            input wire [3:0] io_keypad_row,
-            output wire [3:0] io_keypad_col,
-            output wire [5:0] io_seg_enables,
-            output wire [7:0] io_seven_seg_n
-           );
+`define MIPS_DEBUG
+module mips(
+           `ifndef MIPS_DEBUG
+           input clk, input rst,
+`endif
+           output wire [`MFP_N_LED-1:0] io_led,
+           input wire [`MFP_N_SW-1:0] io_switch,
+           input wire [`MFP_N_PB-1:0] io_btn,
+           input wire [3:0] io_keypad_row,
+           output wire [3:0] io_keypad_col,
+           output wire [5:0] io_seg_enables,
+           output wire [7:0] io_seven_seg_n
+       );
 
 
-/*
+`ifdef MIPS_DEBUG
 reg clk;
 reg rst;
- 
+
 always  begin
     clk = ~clk;
     #10;
 end
- 
+
 initial begin
     clk = 1'b1;
     rst = 1'b1;
-    #100;
+    #110;
     rst = 1'b0;
 end
-*/
+`endif
 
 wire [31:0] ins_addr;
 wire [31:0] ins;
@@ -73,7 +77,7 @@ wire        reg_wr;
 wire        reg_in;  // reg_rd_num2 = rt or 0 (for branch)
 wire        cop_wr;
 wire        cop_rd;
-wire [2:0]  cop_op;
+wire [3:0]  cop_op;
 
 wire [31:0] pc_rt_addr;
 
@@ -220,7 +224,8 @@ peripheral periph (.clk   (clk),
 //> cop0
 wire [2:0]  cop_sel = ins[2:0];
 wire [19:0] cop_code = ins[25:6]; // used in system, break
-cop cop0(.reg_num(rd),
+cop cop0(.clk(clk),
+         .reg_num(rd),
          .reg_sel(cop_sel),
          .in_data(reg_data2),
          .next_pc(ins_addr), // TODO: next pc or current pc

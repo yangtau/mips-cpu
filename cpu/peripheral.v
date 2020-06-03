@@ -47,6 +47,12 @@ wire [3:0] keypad_data;
 reg [23:0] seg_digits;
 reg [5:0] seg_en;
 
+initial begin
+    seg_en = 6'b11_1111;
+    seg_digits = 24'b0;
+    io_led = {`MFP_N_LED{1'b0}};
+end
+
 // memory
 parameter NMEM = 256; // NMEM * 32bits for data
 parameter NBIT = 8;
@@ -54,8 +60,7 @@ reg [31:0] mem[0:NMEM-1];
 
 reg [31:0] mem_reg;
 
-
-always @(posedge clk) begin
+always @(negedge clk) begin
     $display("#dm addr: %h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
     if (dm_w) begin
         case (addr[31:20])
@@ -70,7 +75,7 @@ always @(posedge clk) begin
                     8'h10: // seven segs
                         seg_digits <= wdata[23:0];
                     default:
-                        $display( $time , "  invalid address for write : %x" , addr) ;
+                        $display("#peripheral invalid GPIO address for write : %x" , addr) ;
                 endcase
             end
             default: begin
@@ -81,13 +86,15 @@ always @(posedge clk) begin
                         mem[addr[9:2]][31:24] <= wdata[7:0]; // least-significant 8-bit
                     `DM_OP_SH: // stroe half word
                         mem[addr[9:2]][31:16] <= wdata[15:0]; // least-significant 16-bit
+                    default:
+                        $display("#peripheral dm write: invalid op: %x", dm_op);
                 endcase
             end
         endcase
     end
 end
 
-always @(negedge clk) begin
+always @(posedge clk, dm_r, addr) begin
     $display("#dm addr:%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
     if (dm_r) begin
         case (addr[31:20])
@@ -118,8 +125,9 @@ always @(negedge clk) begin
                         rdata <= {{16{1'b0}}, mem_reg[31:16]};
                     `DM_OP_WD:  // word
                         rdata <= mem_reg;
+                    default:
+                        $display("#peripheral dm write: invalid op: %x", dm_op);
                 endcase
-
             end
         endcase
     end

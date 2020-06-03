@@ -63,7 +63,7 @@ LDFLAGS += -Wl,--defsym,__flash_app_start=0x80000000
 # Place the application code (virtual address)
 LDFLAGS += -Wl,--defsym,__app_start=0x80000000
 # Disable reserving space for ISR vectors
-LDFLAGS += -Wl,--defsym,__isr_vec_count=0
+# LDFLAGS += -Wl,--defsym,__isr_vec_count=0
 # Set the entry point to the true hard-reset address
 LDFLAGS += -Wl,-e,0xbfc00000
 

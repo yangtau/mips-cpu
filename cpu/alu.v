@@ -55,6 +55,8 @@ assign rot = {b, b};
 always @(*) begin
     overflow = 1'b0;
     case (alu_op)
+        `ALU_OP_NOP:
+            out = 32'b0;
         `ALU_OP_ADD:
             out = sa+sb;
         `ALU_OP_ADDU: begin
