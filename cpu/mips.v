@@ -110,8 +110,9 @@ wire        alu_flag_great;
 wire        alu_flag_overflow;
 
 
-always @(posedge clk) begin
-    $display("ins:%x addr:%x alu_res: %x", ins, ins_addr, alu_res);
+always @(negedge clk) begin
+    $display("addr:%x ins:%x alu_res:%x reg_write:<%b %x>, cop_data:%x",
+             ins_addr, ins, alu_res,reg_wr, reg_wr_data, cop_data);
 end
 
 wire div_clk;

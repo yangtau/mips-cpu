@@ -38,7 +38,7 @@ initial begin
         mem[i] <= 32'b0;
 end
 
-always @(posedge clk, read1, read2) begin
+always @(*) begin
     data1 <= mem[read1][31:0];
     data2 <= mem[read2][31:0];
 end

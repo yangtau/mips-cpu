@@ -61,8 +61,8 @@ reg [31:0] mem[0:NMEM-1];
 reg [31:0] mem_reg;
 
 always @(negedge clk) begin
-    $display("#dm addr: %h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
     if (dm_w) begin
+        $display("#dm addr: %h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
         case (addr[31:20])
             12'hbf8: begin
                 // GPIO
@@ -94,9 +94,9 @@ always @(negedge clk) begin
     end
 end
 
-always @(posedge clk, dm_r, addr) begin
-    $display("#dm addr:%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
+always @(*) begin
     if (dm_r) begin
+        $display("#dm addr:%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
         case (addr[31:20])
             12'hbf8: begin
                 // GPIO

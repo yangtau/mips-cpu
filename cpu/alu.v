@@ -136,8 +136,8 @@ always @(*) begin
     great = (out > 0)  ? 1'b1 : 1'b0;
 end
 
-always @(posedge clk) begin
-    $display("#alu: a:%h b:%h o:%h op:%h", a, b, out, alu_op);
+always @(negedge clk) begin
+    $display("#alu: a:%h b:%h o:%h op:%h zero: %h great:%h", a, b, out, alu_op, zero, great);
 end
 
 

@@ -82,7 +82,7 @@ initial begin
     STATUS[0] <= 1'b1;
 end
 
-always @(posedge clk, cop_op, reg_rd) begin
+always @(*) begin
     case (cop_op)
         `COP_OP_NOP:
             out_data = 32'b0;
@@ -108,6 +108,25 @@ always @(posedge clk, cop_op, reg_rd) begin
                         $display("#cop0 read unknown reg number: %x", reg_num);
                 endcase
             end
+            else if (reg_wr) begin
+                case (reg_num)
+                    9:
+                        COUNT = in_data;
+                    11:
+                        COMPARE = in_data;
+                    13:
+                        CAUSE = in_data;
+                    14:
+                        EPC = in_data;
+                    12:
+                        STATUS = in_data;
+                    30:
+                        ERROR_EPC = in_data;
+                    default:
+                        $display("#cop0 write unknown reg number: %x", reg_num);
+                endcase
+            end
+
         `COP_OP_EN: begin
             // ei
             out_data = STATUS;
@@ -131,43 +150,80 @@ always @(posedge clk, cop_op, reg_rd) begin
             end
         `COP_OP_SYS: begin
             EPC = next_pc;
-            // TODO: goto somewhere
             out_data = EXCEPTION_ENTRY;
         end
         `COP_OP_BRK: begin
-            EPC = next_pc;
             // TODO: goto somewhere
             // set exl ?
+            EPC = next_pc;
             out_data = EXCEPTION_ENTRY;
         end
         default:
             $display("#cop0 error: unkown op %d", cop_op);
     endcase
-
 end
 
+/*
 always @(negedge clk) begin
-    // mtc0
-    if (reg_wr && cop_op == `COP_OP_MV) begin
-        // regs[reg_num][reg_sel] = in_data;
-        // regs[reg_num] = in_data;
-        case (reg_num)
-            9:
-                COUNT = in_data;
-            11:
-                COMPARE = in_data;
-            13:
-                CAUSE = in_data;
-            14:
-                EPC = in_data;
-            12:
-                STATUS = in_data;
-            30:
-                ERROR_EPC = in_data;
-            default:
-                $display("#cop0 write unknown reg number: %x", reg_num);
-        endcase
-    end
+    case (cop_op)
+        `COP_OP_NOP: begin
+        end
+        `COP_OP_MV:
+            // mtc0
+            if (reg_wr) begin
+                case (reg_num)
+                    9:
+                        COUNT = in_data;
+                    11:
+                        COMPARE = in_data;
+                    13:
+                        CAUSE = in_data;
+                    14:
+                        EPC = in_data;
+                    12:
+                        STATUS = in_data;
+                    30:
+                        ERROR_EPC = in_data;
+                    default:
+                        $display("#cop0 write unknown reg number: %x", reg_num);
+                endcase
+            end
+        `COP_OP_EN: begin
+            // ei
+            // out_data = STATUS;
+            STATUS[0] = 1'b1;
+        end
+        `COP_OP_DIS: begin
+            // di
+            // out_data = STATUS;
+            STATUS[0] = 1'b0;
+        end
+        `COP_OP_RET:
+            if (STATUS[2]) begin
+                // error
+                // out_data = ERROR_EPC;
+                STATUS[2] = 1'b0;
+            end
+            else begin
+                // exception
+                // out_data = EPC;
+                STATUS[1] = 1'b0;
+            end
+        `COP_OP_SYS: begin
+            EPC = next_pc;
+            // out_data = EXCEPTION_ENTRY;
+        end
+        `COP_OP_BRK: begin
+            EPC = next_pc;
+            // TODO: goto somewhere
+            // set exl ?
+            // out_data = EXCEPTION_ENTRY;
+        end
+        default:
+            $display("#cop0 error: unkown op %d", cop_op);
+    endcase
+ 
 end
+*/
 
 endmodule
