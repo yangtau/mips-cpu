@@ -24,6 +24,7 @@ module mips(
            `ifndef MIPS_DEBUG
            input clk, input rst,
 `endif
+           input wire [5:0] hard_int,
            output wire [`MFP_N_LED-1:0] io_led,
            input wire [`MFP_N_SW-1:0] io_switch,
            input wire [`MFP_N_PB-1:0] io_btn,
@@ -41,6 +42,12 @@ reg rst;
 always  begin
     clk = ~clk;
     #10;
+end
+
+// dump wave
+initial begin
+    $dumpfile("wave.vcd");
+    $dumpvars(0,mips);
 end
 
 initial begin
@@ -225,7 +232,8 @@ peripheral periph (.clk   (clk),
 //> cop0
 wire [2:0]  cop_sel = ins[2:0];
 wire [19:0] cop_code = ins[25:6]; // used in system, break
-cop cop0(.clk(clk),
+cop cop0(.rst(rst),
+         .clk(clk),
          .reg_num(rd),
          .reg_sel(cop_sel),
          .in_data(reg_data2),
@@ -234,6 +242,7 @@ cop cop0(.clk(clk),
          .reg_rd(cop_rd),
          .cop_op(cop_op),
          .code(cop_code),
+         .hard_int(hard_int),
          .out_data(cop_data));
 //< cop0
 endmodule

@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
 module cop(input wire clk,
+           input wire rst,
            input  wire [4:0]  reg_num,
            input  wire [2:0]  reg_sel,
            input  wire [31:0] in_data,
@@ -28,25 +29,10 @@ module cop(input wire clk,
            input  wire        reg_rd,
            input  wire [3:0]  cop_op,
            input  wire [19:0] code, // syscall, break
+           input  wire [5:0] hard_int,
            output reg [31:0] out_data);
 
 parameter EXCEPTION_ENTRY = 32'h80000180;
-// reg [31:0] regs [0:31][0:2];
-
-// `define COUNT     regs[9][0]  // processor cycle count
-// `define COMPARE   regs[11][0]
-// `define CAUSE     regs[13][0] // cause of last exception
-// `define EPC       regs[14][0] // program counter at last exception
-// `define ERROR_EPC regs[30][0] // program counter at last error
-// `define STATUS    regs[12][0] // processor status and control
-//reg [31:0] regs[0:31];
-//`define COUNT     regs[9]  // processor cycle count
-//`define COMPARE   regs[11]
-//`define CAUSE     regs[13] // cause of last exception
-//`define EPC       regs[14] // program counter at last exception
-//`define ERROR_EPC regs[30] // program counter at last error
-//`define STATUS    regs[12] // processor status and control
-
 reg[31:0] COUNT    ;// regs[9]  // processor cycle count
 reg[31:0] COMPARE  ;// regs[11]
 reg[31:0] CAUSE    ;// regs[13] // cause of last exception
@@ -75,14 +61,26 @@ reg[31:0] STATUS   ;// regs[12] // processor status and control
 ```
 */
 
+// CAUSE
+// exception code
+//  CAUSE[6:2];
+// soft interrupt
+//  CAUSE[9:8];
+// hard interrupt
+//   CAUSE[15:10];
+
 initial begin
     CAUSE  = 32'b0;
-    EPC    = 32'b0;
     STATUS = 32'b0;
-    STATUS[0] <= 1'b1;
+    EPC    = EXCEPTION_ENTRY;
 end
 
 always @(*) begin
+    if (rst) begin
+        CAUSE  = 32'b0;
+        STATUS = 32'b0;
+        EPC    = EXCEPTION_ENTRY;
+    end
     case (cop_op)
         `COP_OP_NOP:
             out_data = 32'b0;
@@ -129,33 +127,44 @@ always @(*) begin
 
         `COP_OP_EN: begin
             // ei
-            out_data = STATUS;
             STATUS[0] = 1'b1;
+            out_data = STATUS;
         end
         `COP_OP_DIS: begin
             // di
-            out_data = STATUS;
             STATUS[0] = 1'b0;
+            out_data = STATUS;
         end
         `COP_OP_RET:
             if (STATUS[2]) begin
                 // error
-                out_data = ERROR_EPC;
                 STATUS[2] = 1'b0;
+                out_data = ERROR_EPC;
             end
             else begin
                 // exception
-                out_data = EPC;
                 STATUS[1] = 1'b0;
+                out_data = EPC;
             end
         `COP_OP_SYS: begin
             EPC = next_pc;
+            // set exl
+            STATUS[1] = 1'b1;
+            STATUS[2] = 1'b1;
+            // set cause
+            CAUSE[8] = 1'b1; // sint0
+            CAUSE[6:2] = 5'h08; // exception code for system call: 0x08
             out_data = EXCEPTION_ENTRY;
         end
         `COP_OP_BRK: begin
             // TODO: goto somewhere
-            // set exl ?
             EPC = next_pc;
+            // set exl
+            STATUS[1] = 1'b1;
+            STATUS[2] = 1'b1;
+            // set cause
+            CAUSE[8] = 1'b1; // sint0
+            CAUSE[6:2] = 5'h09; // exception code for break point: 0x08
             out_data = EXCEPTION_ENTRY;
         end
         default:
