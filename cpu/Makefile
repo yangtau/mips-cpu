@@ -6,4 +6,6 @@ mips: mips.v alu.v  im.v pc.v reg.v extend.v cop.v control.v peripheral.v \
 
 clean:
 	rm -f mips
-	rm *.vcd
+	rm -f *.vcd
+	rm -f *.txt
+	rm -f *.exe *.wdb *.html *.xml *.cmd *.xmsgs *.gise *.ini

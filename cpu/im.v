@@ -22,8 +22,8 @@ module im(input  wire        clk,
           input  wire [31:0] addr,
           output reg [31:0] data);
 
-parameter NMEM   = 256; // NMEM * 32 bits for instructions
-parameter NBIT = 8;
+parameter NMEM   = 1024; // NMEM * 32 bits for instructions
+parameter NBIT = 10;
 parameter IM_TXT1 = "im1.txt";
 parameter IM_TXT2 = "im2.txt";
 
