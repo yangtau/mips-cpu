@@ -31,7 +31,7 @@ end
 
 wire [31:0] pc_plus4 = pc_r + 4;
 wire [31:0] br       = {{14{im1[15]}}, im1, 2'b00} + pc_plus4;     // branch offset
-wire [31:0] jmp      = {pc_r[31:30], im2, 2'b00};    // jump addr
+wire [31:0] jmp      = {pc_r[31:28], im2, 2'b00};    // jump addr
 
 always @(*) begin
     $display("#pc:addr %x pc_op:%x zero:%x great:%x",addr, pc_op, zero, great);
