@@ -177,7 +177,7 @@ always @(addr, dm_r, dm_op, io_switch, io_btn, keypad_data) begin
 end
 
 //> keypad
-keypad kp(.clk(clk),
+keypad kp(.clk(clk_5hz),
           .rst(rst),
           .row(io_keypad_row),
           .col(io_keypad_col),

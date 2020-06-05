@@ -112,3 +112,4 @@ clean:
 	rm -f program.dis
 	rm -f program.rec
 	rm -f *.txt
+	rm -f *.out

@@ -122,10 +122,10 @@ always @(negedge clk) begin
              ins_addr, ins, alu_res,reg_wr, reg_wr_data, cop_data);
 end
 
-wire div_clk;
-clock_div clkdiv(.rst(rst),
-                 .clk(clk),
-                 .div_clk(div_clk));
+wire div_clk = clk; // TODO:
+// clock_div clkdiv(.rst(rst),
+//                  .clk(clk),
+//                  .div_clk(div_clk));
 
 im im(.clk  (clk),
       .addr (ins_addr),

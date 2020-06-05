@@ -9,6 +9,7 @@ void delay() {
 }
 
 volatile int n;
+
 int main() {
   // set up interrupts
   // clear boot interrupt vector bit in cop0 status reg
@@ -16,10 +17,12 @@ int main() {
   mips32_bicsr(SR_ERL);
   // set master interrupt enable bit and individual interrupt
   // enable bits in cop0 status reg
-  mips32_bissr(SR_IE | SR_SINT1 | SR_HINT0 | SR_HINT1 | SR_HINT2);
+  mips32_bissr(SR_IE | SR_SINT0 | SR_HINT0 | SR_HINT1 | SR_HINT2);
+  n = 0x3;
   while (1) {
-    n = 0xa3a3;
     asm("syscall");
+    n++;
+    delay();
   }
   return 0;
 }
@@ -28,9 +31,12 @@ void __attribute__((interrupt, keep_interrupts_masked))
 _mips_general_exception() {
   unsigned cause = mips32_getcr();
   if (cause & CR_SINT0) {
-    // syscall
-    MFP_LEDS = n;
-    MFP_7SEGDIGITS = n;
+    // sint0
+    if ((cause & CR_XMASK) >> 2 == 8) {
+      // syscall
+      MFP_LEDS = n;
+      MFP_7SEGDIGITS = n;
+    }
   }
   if (cause & CR_HINT0) {
     MFP_LEDS = 2;
