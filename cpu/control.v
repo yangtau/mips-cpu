@@ -500,6 +500,7 @@ always @(*) begin
 
         `OPCODE_SPECIAL3: begin
             reg_wr = 1'b1;
+            reg_src = `REG_SRC_ALU;
             case (funct)
                 6'b000100: begin
                     //ins

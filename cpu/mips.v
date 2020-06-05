@@ -237,7 +237,7 @@ cop cop0(.rst(rst),
          .reg_num(rd),
          .reg_sel(cop_sel),
          .in_data(reg_data2),
-         .next_pc(ins_addr), // TODO: next pc or current pc
+         .next_pc(pc_rt_addr),
          .reg_wr(cop_wr),
          .reg_rd(cop_rd),
          .cop_op(cop_op),

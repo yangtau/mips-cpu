@@ -67,12 +67,28 @@ reg[31:0] STATUS   ;// regs[12] // processor status and control
 // soft interrupt
 //  CAUSE[9:8];
 // hard interrupt
-//   CAUSE[15:10];
+//  CAUSE[15:10];
 
 initial begin
     CAUSE  = 32'b0;
     STATUS = 32'b0;
     EPC    = EXCEPTION_ENTRY;
+end
+
+wire int_enabled = STATUS[0] & ~STATUS[1] & ~STATUS[2];
+wire [1:0] soft_enable_mask = STATUS[9:8];
+wire [7:0] hard_enable_mask = STATUS[16:10];
+
+always @(negedge clk) begin
+    if ((hard_enable_mask[5:0] & hard_int) && int_enabled) begin
+        // handle hard int
+        CAUSE[15:10] = hard_int;
+        // set exl
+        STATUS[1] = 1'b1;
+        // set cause
+        CAUSE[6:2] = 5'h0; // exception code for int
+        out_data = EXCEPTION_ENTRY;
+    end
 end
 
 always @(*) begin
@@ -147,92 +163,30 @@ always @(*) begin
                 out_data = EPC;
             end
         `COP_OP_SYS: begin
-            EPC = next_pc;
-            // set exl
-            STATUS[1] = 1'b1;
-            STATUS[2] = 1'b1;
-            // set cause
-            CAUSE[8] = 1'b1; // sint0
-            CAUSE[6:2] = 5'h08; // exception code for system call: 0x08
-            out_data = EXCEPTION_ENTRY;
+            if (int_enabled && soft_enable_mask[0]) begin
+                EPC = next_pc;
+                // set exl
+                STATUS[1] = 1'b1;
+                // set cause
+                CAUSE[8] = 1'b1; // sint0
+                CAUSE[6:2] = 5'h08; // exception code for system call: 0x08
+                out_data = EXCEPTION_ENTRY;
+            end
         end
         `COP_OP_BRK: begin
-            // TODO: goto somewhere
-            EPC = next_pc;
-            // set exl
-            STATUS[1] = 1'b1;
-            STATUS[2] = 1'b1;
-            // set cause
-            CAUSE[8] = 1'b1; // sint0
-            CAUSE[6:2] = 5'h09; // exception code for break point: 0x08
-            out_data = EXCEPTION_ENTRY;
+            if (int_enabled && soft_enable_mask[0]) begin
+                EPC = next_pc;
+                // set exl
+                STATUS[1] = 1'b1;
+                // set cause
+                CAUSE[8] = 1'b1; // sint0
+                CAUSE[6:2] = 5'h09; // exception code for break point: 0x08
+                out_data = EXCEPTION_ENTRY;
+            end
         end
         default:
-            $display("#cop0 error: unkown op %d", cop_op);
+            $display("#cop0 error: unknown op %d", cop_op);
     endcase
 end
-
-/*
-always @(negedge clk) begin
-    case (cop_op)
-        `COP_OP_NOP: begin
-        end
-        `COP_OP_MV:
-            // mtc0
-            if (reg_wr) begin
-                case (reg_num)
-                    9:
-                        COUNT = in_data;
-                    11:
-                        COMPARE = in_data;
-                    13:
-                        CAUSE = in_data;
-                    14:
-                        EPC = in_data;
-                    12:
-                        STATUS = in_data;
-                    30:
-                        ERROR_EPC = in_data;
-                    default:
-                        $display("#cop0 write unknown reg number: %x", reg_num);
-                endcase
-            end
-        `COP_OP_EN: begin
-            // ei
-            // out_data = STATUS;
-            STATUS[0] = 1'b1;
-        end
-        `COP_OP_DIS: begin
-            // di
-            // out_data = STATUS;
-            STATUS[0] = 1'b0;
-        end
-        `COP_OP_RET:
-            if (STATUS[2]) begin
-                // error
-                // out_data = ERROR_EPC;
-                STATUS[2] = 1'b0;
-            end
-            else begin
-                // exception
-                // out_data = EPC;
-                STATUS[1] = 1'b0;
-            end
-        `COP_OP_SYS: begin
-            EPC = next_pc;
-            // out_data = EXCEPTION_ENTRY;
-        end
-        `COP_OP_BRK: begin
-            EPC = next_pc;
-            // TODO: goto somewhere
-            // set exl ?
-            // out_data = EXCEPTION_ENTRY;
-        end
-        default:
-            $display("#cop0 error: unkown op %d", cop_op);
-    endcase
- 
-end
-*/
 
 endmodule

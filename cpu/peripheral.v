@@ -56,8 +56,8 @@ end
 
 // GPIO: 0xbf80_00xx
 // memory
-parameter NMEM = 4094; // NMEM * 32bits for data
-parameter NBIT = 12;
+parameter NMEM = 1024; // NMEM * 32bits for data
+parameter NBIT = 10;
 reg [31:0] mem1[0:NMEM-1]; // global area: 0x8000_8xxx
 reg [31:0] mem2[0:NMEM-1]; // stack: 0x8004_xxxx
 // reg [31:0] mem3[0:NMEM-1]; // bss:   0x8000_1 I do not think I really need it
@@ -67,9 +67,9 @@ reg [31:0] mem_reg;
 
 always @(negedge clk) begin
     if (dm_w) begin
-        $display("#dm addr: %h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
-        case (addr[31:12])
-            20'hbf80_0: begin
+        $display("#dm addr: %h w%d: %h", addr, dm_w, wdata);
+        case (addr[31:16])
+            20'hbf80: begin
                 // GPIO
                 // disable data mem
                 case (addr[7:0])
@@ -80,46 +80,45 @@ always @(negedge clk) begin
                     8'h10: // seven segs
                         seg_digits <= wdata[23:0];
                     default:
-                        $display("#peripheral invalid GPIO address for write : %x" , addr) ;
+                        $display("#peripheral invalid GPIO address for writing: %x" , addr) ;
                 endcase
             end
-            20'h8000_8: begin
+            20'h8000: begin
                 // global area
                 case (dm_op)
                     `DM_OP_WD:
-                        mem1[addr[9:2]] <= wdata;
+                        mem1[addr[NBIT+1:2]] <= wdata;
                     `DM_OP_SB: // store byte
-                        mem1[addr[9:2]][31:24] <= wdata[7:0]; // least-significant 8-bit
+                        mem1[addr[NBIT+1:2]][31:24] <= wdata[7:0]; // least-significant 8-bit
                     `DM_OP_SH: // stroe half word
-                        mem1[addr[9:2]][31:16] <= wdata[15:0]; // least-significant 16-bit
+                        mem1[addr[NBIT+1:2]][31:16] <= wdata[15:0]; // least-significant 16-bit
                     default:
                         $display("#peripheral dm write: invalid op: %x", dm_op);
                 endcase
             end
-            20'h8004_0: begin
+            20'h8003: begin
                 // stack
                 case (dm_op)
                     `DM_OP_WD:
-                        mem2[addr[9:2]] <= wdata;
+                        mem2[addr[NBIT+1:2]] <= wdata;
                     `DM_OP_SB: // store byte
-                        mem2[addr[9:2]][31:24] <= wdata[7:0]; // least-significant 8-bit
+                        mem2[addr[NBIT+1:2]][31:24] <= wdata[7:0]; // least-significant 8-bit
                     `DM_OP_SH: // stroe half word
-                        mem2[addr[9:2]][31:16] <= wdata[15:0]; // least-significant 16-bit
+                        mem2[addr[NBIT+1:2]][31:16] <= wdata[15:0]; // least-significant 16-bit
                     default:
                         $display("#peripheral dm write: invalid op: %x", dm_op);
                 endcase
             end
             default:
-                $display("#peripheral invalid address for write : %x" , addr) ;
+                $display("#peripheral invalid address for writing : %x" , addr) ;
         endcase
     end
 end
 
-always @(*) begin
+always @(addr, dm_r, dm_op, io_switch, io_btn, keypad_data) begin
     if (dm_r) begin
-        $display("#dm addr:%h w%d: %h ;r%d:%h", addr, dm_w, wdata, dm_r, rdata);
-        case (addr[31:12])
-            20'hbf80_0: begin
+        case (addr[31:16])
+            20'hbf80: begin
                 // GPIO
                 // disable data mem
                 case (addr[7:0])
@@ -130,10 +129,10 @@ always @(*) begin
                     8'h14: // keypad
                         rdata <= {28'b0, keypad_data};
                     default:
-                        $display( $time , "  invalid address for read: %x" , addr) ;
+                        $display("#peripheral GPIO invalid address for reading: %x" , addr) ;
                 endcase
             end
-            20'h8000_8: begin
+            20'h8000: begin
                 // global area
                 mem_reg = mem1[addr[NBIT+1:2]][31:0];
                 case (dm_op)
@@ -148,11 +147,11 @@ always @(*) begin
                     `DM_OP_WD:  // word
                         rdata <= mem_reg;
                     default:
-                        $display("#peripheral dm write: invalid op: %x", dm_op);
+                        $display("#peripheral dm read: invalid op: %x", dm_op);
                 endcase
 
             end
-            20'h8004_0: begin
+            20'h8003: begin
                 // stack
                 mem_reg = mem2[addr[NBIT+1:2]][31:0];
                 case (dm_op)
@@ -167,12 +166,13 @@ always @(*) begin
                     `DM_OP_WD:  // word
                         rdata <= mem_reg;
                     default:
-                        $display("#peripheral dm write: invalid op: %x", dm_op);
+                        $display("#peripheral dm read: invalid op: %x", dm_op);
                 endcase
             end
             default:
-                $display("#peripheral invalid address for write : %x" , addr) ;
+                $display("#peripheral invalid address for reading: %x" , addr) ;
         endcase
+        $display("#dm addr:%h r%d:%h", addr,  dm_r, rdata);
     end
 end
 
