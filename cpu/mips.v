@@ -31,7 +31,7 @@ module mips(
            input wire [3:0] io_keypad_row,
            output wire [3:0] io_keypad_col,
            output wire [5:0] io_seg_enables,
-           output wire [7:0] io_seven_seg_n
+           output wire [7:0] io_seven_seg
        );
 
 
@@ -226,7 +226,7 @@ peripheral periph (.clk   (clk),
                    .io_keypad_row(io_keypad_row),
                    .io_keypad_col(io_keypad_col),
                    .io_seg_enables(io_seg_enables),
-                   .io_seven_seg_n(io_seven_seg_n));
+                   .io_seven_seg(io_seven_seg));
 //< peripheral
 
 //> cop0

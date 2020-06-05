@@ -37,7 +37,7 @@ module peripheral(input wire rst,
                   input wire [3:0] io_keypad_row,
                   output wire [3:0] io_keypad_col,
                   output wire [5:0] io_seg_enables,
-                  output wire [7:0] io_seven_seg_n
+                  output wire [7:0] io_seven_seg
                  );
 
 // keypad
@@ -187,7 +187,7 @@ segs_ctrl segs(.clk(clk_5hz),
                .rst(rst),
                .enables(seg_en),
                .data(seg_digits),
-               .seven_segs_point(io_seven_seg_n),
+               .seven_segs_point(io_seven_seg),
                .show_one(io_seg_enables));
 
 endmodule
