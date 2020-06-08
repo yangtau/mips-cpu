@@ -79,7 +79,12 @@ wire int_enabled = STATUS[0] & ~STATUS[1] & ~STATUS[2];
 wire [1:0] soft_enable_mask = STATUS[9:8];
 wire [7:0] hard_enable_mask = STATUS[16:10];
 
-always @(negedge clk) begin
+always @(*) begin
+    if (rst) begin
+        CAUSE  = 32'b0;
+        STATUS = 32'b0;
+        EPC    = EXCEPTION_ENTRY;
+    end
     if ((hard_enable_mask[5:0] & hard_int) && int_enabled) begin
         // handle hard int
         CAUSE[15:10] = hard_int;
@@ -89,14 +94,7 @@ always @(negedge clk) begin
         CAUSE[6:2] = 5'h0; // exception code for int
         out_data = EXCEPTION_ENTRY;
     end
-end
-
-always @(*) begin
-    if (rst) begin
-        CAUSE  = 32'b0;
-        STATUS = 32'b0;
-        EPC    = EXCEPTION_ENTRY;
-    end
+    else
     case (cop_op)
         `COP_OP_NOP:
             out_data = 32'b0;

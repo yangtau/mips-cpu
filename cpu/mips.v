@@ -19,11 +19,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 `include "common.v"
-`define MIPS_DEBUG
 module mips(
-           `ifndef MIPS_DEBUG
-           input clk, input rst,
-`endif
+           input clk_100mhz,
+           input rst,
            input wire [5:0] hard_int,
            output wire [`MFP_N_LED-1:0] io_led,
            input wire [`MFP_N_SW-1:0] io_switch,
@@ -57,6 +55,17 @@ initial begin
     rst = 1'b0;
 end
 `endif
+
+wire div_clk;
+clock_div clkdiv(.rst(rst),
+                 .clk(clk_100mhz),
+                 .div_clk(div_clk));
+
+wire clk;
+clock_div #(.COUNTER(20)) clkdiv_cpu(.rst(rst),
+                                   .clk(clk_100mhz),
+                                   .div_clk(clk));
+
 
 wire [31:0] ins_addr;
 wire [31:0] ins;
@@ -121,11 +130,6 @@ always @(negedge clk) begin
     $display("addr:%x ins:%x alu_res:%x reg_write:<%b %x>, cop_data:%x",
              ins_addr, ins, alu_res,reg_wr, reg_wr_data, cop_data);
 end
-
-wire div_clk = clk; // TODO:
-// clock_div clkdiv(.rst(rst),
-//                  .clk(clk),
-//                  .div_clk(div_clk));
 
 im im(.clk  (clk),
       .addr (ins_addr),

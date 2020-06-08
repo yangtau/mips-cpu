@@ -29,7 +29,7 @@ always @(posedge clk or posedge rst)
     if (rst == 1'b1)
         clock_count <= {32{1'b0}};
     else begin
-        if ( clock_count == COUNTER-1) // CLK为100M时，dividedClk的周期 1ms , 高低各 0.5ms
+        if ( clock_count == COUNTER-1)
         begin
             div_clk <= ~div_clk;
             clock_count <= {32{1'b0}};
